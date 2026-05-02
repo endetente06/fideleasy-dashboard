@@ -9,14 +9,14 @@ export default function JoinPage({ params }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/shops/${shop_id}`)
+    fetch(`https://fideleasy-backend-production.up.railway.app/shops/${shop_id}`)
       .then(res => res.json())
       .then(data => setShop(data.data));
   }, [shop_id]);
 
   const join = () => {
     setLoading(true);
-    fetch('http://localhost:3000/customers', {
+    fetch('https://fideleasy-backend-production.up.railway.app/customers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...form, shop_id })

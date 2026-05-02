@@ -8,7 +8,7 @@ export default function QRCodePage() {
   const SHOP_ID = 'a23f70ea-db85-46b4-9bd1-c650831b134a';
 
   useEffect(() => {
-    fetch(`http://localhost:3000/qrcode/${SHOP_ID}`)
+    fetch(`https://fideleasy-backend-production.up.railway.app/qrcode/${SHOP_ID}`)
       .then(res => res.json())
       .then(data => {
         setQrCode(data.qrCode);

@@ -10,14 +10,14 @@ export default function Notifications() {
   const SHOP_ID = 'a23f70ea-db85-46b4-9bd1-c650831b134a';
 
   useEffect(() => {
-    fetch(`http://localhost:3000/notifications/${SHOP_ID}`)
+    fetch(`https://fideleasy-backend-production.up.railway.app/notifications/${SHOP_ID}`)
       .then(res => res.json())
       .then(data => setNotifications(data.data || []));
   }, []);
 
   const sendNotif = () => {
     setSending(true);
-    fetch('http://localhost:3000/notifications', {
+    fetch('https://fideleasy-backend-production.up.railway.app/notifications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...form, shop_id: SHOP_ID })
@@ -28,7 +28,7 @@ export default function Notifications() {
         setSent(true);
         setForm({ title: '', message: '', target: 'tous' });
         setTimeout(() => setSent(false), 3000);
-        fetch(`http://localhost:3000/notifications/${SHOP_ID}`)
+        fetch(`https://fideleasy-backend-production.up.railway.app/notifications/${SHOP_ID}`)
           .then(res => res.json())
           .then(data => setNotifications(data.data || []));
       });

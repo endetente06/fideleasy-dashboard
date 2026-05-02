@@ -10,13 +10,13 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:3000/shops')
+    fetch('https://fideleasy-backend-production.up.railway.app/shops')
       .then(res => res.json())
       .then(data => {
         setStats(prev => ({ ...prev, clients: data.data?.length || 0 }));
       });
 
-    fetch('http://localhost:3000/cards/all')
+    fetch('https://fideleasy-backend-production.up.railway.app/cards/all')
       .then(res => res.json())
       .then(data => {
         setStats(prev => ({ ...prev, cartes: data.data?.length || 0 }));

@@ -14,7 +14,7 @@ export default function Clients() {
   }, []);
 
   const fetchClients = () => {
-    fetch(`http://localhost:3000/customers/${SHOP_ID}`)
+    fetch(`https://fideleasy-backend-production.up.railway.app/customers/${SHOP_ID}`)
       .then(res => res.json())
       .then(data => {
         setClients(data.data || []);
@@ -23,7 +23,7 @@ export default function Clients() {
   };
 
   const addClient = () => {
-    fetch('http://localhost:3000/customers', {
+    fetch('https://fideleasy-backend-production.up.railway.app/customers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...form, shop_id: SHOP_ID })
