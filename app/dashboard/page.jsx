@@ -36,7 +36,7 @@ export default function Dashboard() {
   ];
 
   const statCards = [
-    { icon: '👥', label: 'Clients actifs', value: stats.clients, color: '#4f6ef7', bg: 'rgba(79,110,247,0.1)' },
+    { icon: '👥', label: 'Clients actifs', value: stats.clients, color: '#d4af37', bg: 'rgba(212,175,55,0.1)' },
     { icon: '💳', label: 'Cartes émises', value: stats.cards, color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
     { icon: '🔔', label: 'Notifications', value: stats.notifications, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
     { icon: '⭐', label: 'Plan actuel', value: shop?.plan || 'starter', color: '#a855f7', bg: 'rgba(168,85,247,0.1)' },
@@ -48,7 +48,7 @@ export default function Dashboard() {
       <div style={{width:'240px',background:'#0a0a18',borderRight:'1px solid #1e1e35',padding:'24px 0',display:'flex',flexDirection:'column',position:'fixed',height:'100vh'}}>
         <div style={{padding:'0 24px 32px'}}>
           <h1 style={{fontSize:'22px',fontWeight:'800',margin:0}}>
-            Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+            Fidel<span style={{color:'#d4af37'}}>Easy</span>
           </h1>
           {shop && <p style={{fontSize:'12px',color:'#6060a0',margin:'4px 0 0'}}>{shop.name}</p>}
         </div>
@@ -56,9 +56,9 @@ export default function Dashboard() {
         {navItems.map(item => (
           <a key={item.href} href={item.href} style={{
             display:'flex',alignItems:'center',gap:'12px',padding:'12px 24px',
-            color: item.active ? '#4f6ef7' : '#8080b0',
-            background: item.active ? 'rgba(79,110,247,0.1)' : 'transparent',
-            borderLeft: item.active ? '3px solid #4f6ef7' : '3px solid transparent',
+            color: item.active ? '#d4af37' : '#8080b0',
+            background: item.active ? 'rgba(212,175,55,0.1)' : 'transparent',
+            borderLeft: item.active ? '3px solid #d4af37' : '3px solid transparent',
             textDecoration:'none',fontSize:'14px',fontWeight: item.active ? '600' : '400',
             transition:'all 0.2s'
           }}>
@@ -68,10 +68,10 @@ export default function Dashboard() {
         ))}
 
         <div style={{marginTop:'auto',padding:'24px'}}>
-          <div style={{background:'rgba(79,110,247,0.1)',border:'1px solid rgba(79,110,247,0.2)',borderRadius:'12px',padding:'16px'}}>
+          <div style={{background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'12px',padding:'16px'}}>
             <p style={{fontSize:'12px',color:'#6060a0',margin:'0 0 4px'}}>Plan actuel</p>
-            <p style={{fontSize:'14px',fontWeight:'600',color:'#4f6ef7',margin:'0 0 12px',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
-            <a href="#" style={{display:'block',textAlign:'center',background:'#4f6ef7',color:'white',borderRadius:'8px',padding:'8px',fontSize:'12px',textDecoration:'none',fontWeight:'600'}}>
+            <p style={{fontSize:'14px',fontWeight:'600',color:'#d4af37',margin:'0 0 12px',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
+            <a href="#" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'8px',padding:'8px',fontSize:'12px',textDecoration:'none',fontWeight:'600'}}>
               Mettre à niveau
             </a>
           </div>
@@ -87,10 +87,10 @@ export default function Dashboard() {
             <p style={{color:'#6060a0',margin:0,fontSize:'14px'}}>Bienvenue sur FidelEasy 👋</p>
           </div>
           <div style={{display:'flex',gap:'12px'}}>
-            <a href="/qrcode" style={{background:'rgba(79,110,247,0.1)',border:'1px solid rgba(79,110,247,0.3)',color:'#4f6ef7',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>
+            <a href="/qrcode" style={{background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',color:'#d4af37',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>
               📱 Mon QR Code
             </a>
-            <a href="/clients" style={{background:'#4f6ef7',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>
+            <a href="/clients" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>
               + Ajouter un client
             </a>
           </div>
@@ -116,7 +116,7 @@ export default function Dashboard() {
           <h3 style={{fontSize:'16px',fontWeight:'600',margin:'0 0 16px'}}>Actions rapides</h3>
           <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'12px'}}>
             {[
-              { icon:'👥', label:'Voir mes clients', href:'/clients', color:'#4f6ef7' },
+              { icon:'👥', label:'Voir mes clients', href:'/clients', color:'#d4af37' },
               { icon:'🔔', label:'Envoyer une notification', href:'/notifications', color:'#f59e0b' },
               { icon:'📱', label:'Afficher le QR Code', href:'/qrcode', color:'#22c55e' },
             ].map(action => (

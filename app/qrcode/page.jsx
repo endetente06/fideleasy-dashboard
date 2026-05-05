@@ -32,15 +32,15 @@ export default function QRCode() {
       <div style={{width:'240px',background:'#0a0a18',borderRight:'1px solid #1e1e35',padding:'24px 0',display:'flex',flexDirection:'column',position:'fixed',height:'100vh'}}>
         <div style={{padding:'0 24px 32px'}}>
           <h1 style={{fontSize:'22px',fontWeight:'800',margin:0}}>
-            Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+            Fidel<span style={{color:'#d4af37'}}>Easy</span>
           </h1>
         </div>
         {navItems.map(item => (
           <a key={item.href} href={item.href} style={{
             display:'flex',alignItems:'center',gap:'12px',padding:'12px 24px',
-            color: item.active ? '#4f6ef7' : '#8080b0',
-            background: item.active ? 'rgba(79,110,247,0.1)' : 'transparent',
-            borderLeft: item.active ? '3px solid #4f6ef7' : '3px solid transparent',
+            color: item.active ? '#d4af37' : '#8080b0',
+            background: item.active ? 'rgba(212,175,55,0.1)' : 'transparent',
+            borderLeft: item.active ? '3px solid #d4af37' : '3px solid transparent',
             textDecoration:'none',fontSize:'14px',fontWeight: item.active ? '600' : '400',
           }}>
             <span style={{fontSize:'18px'}}>{item.icon}</span>
@@ -72,10 +72,10 @@ export default function QRCode() {
                   Les clients scannent ce code pour rejoindre votre programme de fidélité
                 </p>
                 <div style={{display:'flex',gap:'12px',justifyContent:'center'}}>
-                  <button onClick={print} style={{background:'#4f6ef7',color:'white',border:'none',borderRadius:'10px',padding:'10px 20px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
+                  <button onClick={print} style={{background:'#d4af37',color:'white',border:'none',borderRadius:'10px',padding:'10px 20px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
                     🖨️ Imprimer
                   </button>
-                  <a href={qrData?.qrCode} download="qrcode-fideleasy.png" style={{background:'rgba(79,110,247,0.1)',color:'#4f6ef7',border:'1px solid rgba(79,110,247,0.3)',borderRadius:'10px',padding:'10px 20px',fontSize:'14px',fontWeight:'600',textDecoration:'none'}}>
+                  <a href={qrData?.qrCode} download="qrcode-fideleasy.png" style={{background:'rgba(212,175,55,0.1)',color:'#d4af37',border:'1px solid rgba(212,175,55,0.3)',borderRadius:'10px',padding:'10px 20px',fontSize:'14px',fontWeight:'600',textDecoration:'none'}}>
                     ⬇️ Télécharger
                   </a>
                 </div>
@@ -94,7 +94,7 @@ export default function QRCode() {
                 { num:'4', title:'Carte dans le wallet', desc:'Sa carte de fidélité est ajoutée à Apple/Google Wallet' },
               ].map(step => (
                 <div key={step.num} style={{display:'flex',gap:'12px',marginBottom:'16px',alignItems:'flex-start'}}>
-                  <div style={{width:'28px',height:'28px',borderRadius:'50%',background:'rgba(79,110,247,0.2)',color:'#4f6ef7',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px',fontWeight:'700',flexShrink:0}}>
+                  <div style={{width:'28px',height:'28px',borderRadius:'50%',background:'rgba(212,175,55,0.2)',color:'#d4af37',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px',fontWeight:'700',flexShrink:0}}>
                     {step.num}
                   </div>
                   <div>
@@ -105,9 +105,9 @@ export default function QRCode() {
               ))}
             </div>
 
-            <div style={{background:'rgba(79,110,247,0.05)',border:'1px solid rgba(79,110,247,0.2)',borderRadius:'16px',padding:'20px'}}>
+            <div style={{background:'rgba(212,175,55,0.05)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'16px',padding:'20px'}}>
               <p style={{fontSize:'13px',color:'#6060a0',margin:'0 0 8px'}}>🔗 Lien direct</p>
-              <p style={{fontSize:'12px',color:'#4f6ef7',wordBreak:'break-all',margin:0}}>{qrData?.url}</p>
+              <p style={{fontSize:'12px',color:'#d4af37',wordBreak:'break-all',margin:0}}>{qrData?.url}</p>
             </div>
           </div>
         </div>

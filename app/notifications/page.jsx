@@ -55,15 +55,15 @@ export default function Notifications() {
       <div style={{width:'240px',background:'#0a0a18',borderRight:'1px solid #1e1e35',padding:'24px 0',display:'flex',flexDirection:'column',position:'fixed',height:'100vh'}}>
         <div style={{padding:'0 24px 32px'}}>
           <h1 style={{fontSize:'22px',fontWeight:'800',margin:0}}>
-            Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+            Fidel<span style={{color:'#d4af37'}}>Easy</span>
           </h1>
         </div>
         {navItems.map(item => (
           <a key={item.href} href={item.href} style={{
             display:'flex',alignItems:'center',gap:'12px',padding:'12px 24px',
-            color: item.active ? '#4f6ef7' : '#8080b0',
-            background: item.active ? 'rgba(79,110,247,0.1)' : 'transparent',
-            borderLeft: item.active ? '3px solid #4f6ef7' : '3px solid transparent',
+            color: item.active ? '#d4af37' : '#8080b0',
+            background: item.active ? 'rgba(212,175,55,0.1)' : 'transparent',
+            borderLeft: item.active ? '3px solid #d4af37' : '3px solid transparent',
             textDecoration:'none',fontSize:'14px',fontWeight: item.active ? '600' : '400',
           }}>
             <span style={{fontSize:'18px'}}>{item.icon}</span>
@@ -113,7 +113,7 @@ export default function Notifications() {
             </div>
 
             <button onClick={sendNotification} disabled={sending || !form.title || !form.message}
-              style={{width:'100%',background:'#4f6ef7',color:'white',border:'none',borderRadius:'10px',padding:'12px',cursor:'pointer',fontSize:'15px',fontWeight:'600'}}>
+              style={{width:'100%',background:'#d4af37',color:'white',border:'none',borderRadius:'10px',padding:'12px',cursor:'pointer',fontSize:'15px',fontWeight:'600'}}>
               {sending ? 'Envoi en cours...' : '🚀 Envoyer la notification'}
             </button>
           </div>
@@ -138,7 +138,7 @@ export default function Notifications() {
                       <span style={{fontSize:'11px',color:'#6060a0'}}>{timeAgo(notif.created_at)}</span>
                     </div>
                     <p style={{color:'#8080b0',fontSize:'13px',margin:'0 0 8px'}}>{notif.message}</p>
-                    <span style={{background:'rgba(79,110,247,0.1)',color:'#4f6ef7',borderRadius:'4px',padding:'2px 8px',fontSize:'11px'}}>
+                    <span style={{background:'rgba(212,175,55,0.1)',color:'#d4af37',borderRadius:'4px',padding:'2px 8px',fontSize:'11px'}}>
                       {notif.target === 'all' ? 'Tous les clients' : notif.target}
                     </span>
                   </div>
