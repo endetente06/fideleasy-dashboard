@@ -6,7 +6,7 @@ export default function Legal() {
         <div style={{marginBottom:'48px'}}>
           <a href="/dashboard" style={{color:'#4f6ef7',textDecoration:'none',fontSize:'14px'}}>← Retour au dashboard</a>
           <h1 style={{fontSize:'32px',fontWeight:'800',margin:'16px 0 8px'}}>
-            Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+            Fidel<span style={{color:'#059669'}}>Easy</span>
           </h1>
           <p style={{color:'#6060a0'}}>Mentions légales & Conditions Générales de Vente</p>
         </div>

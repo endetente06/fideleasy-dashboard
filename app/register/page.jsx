@@ -41,7 +41,7 @@ export default function Register() {
       <div style={{width:'100%',maxWidth:'400px'}}>
         <div style={{textAlign:'center',marginBottom:'40px'}}>
           <h1 style={{fontSize:'32px',fontWeight:'bold',marginBottom:'8px'}}>
-            Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+            Fidel<span style={{color:'#d4af37'}}>Easy</span>
           </h1>
           <p style={{color:'#6060a0'}}>Créez votre compte commerçant</p>
         </div>

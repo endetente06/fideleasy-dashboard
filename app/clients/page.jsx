@@ -47,7 +47,7 @@ export default function Clients() {
       <div style={{width:'240px',background:'#0a0a18',borderRight:'1px solid #1e1e35',padding:'24px 0',display:'flex',flexDirection:'column',position:'fixed',height:'100vh'}}>
         <div style={{padding:'0 24px 32px'}}>
           <h1 style={{fontSize:'22px',fontWeight:'800',margin:0}}>
-            Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+            Fidel<span style={{color:'#059669'}}>Easy</span>
           </h1>
         </div>
         {navItems.map(item => (
