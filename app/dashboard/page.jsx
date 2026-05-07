@@ -39,6 +39,7 @@ export default function Dashboard() {
     { icon: '👥', label: 'Clients', href: '/clients' },
     { icon: '🔔', label: 'Notifs', href: '/notifications' },
     { icon: '📱', label: 'QR Code', href: '/qrcode' },
+    { icon: '⚙️', label: 'Réglages', href: '/settings' },
   ];
 
   const statCards = [

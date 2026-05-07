@@ -29,7 +29,8 @@ export default function QRCode() {
     { icon: '📊', label: 'Dashboard', href: '/dashboard' },
     { icon: '👥', label: 'Clients', href: '/clients' },
     { icon: '🔔', label: 'Notifs', href: '/notifications' },
-    { icon: '📱', label: 'QR Code', href: '/qrcode', active: true },
+    { icon: '📱', label: 'QR Code', href: '/qrcode' },
+    { icon: '⚙️', label: 'Réglages', href: '/settings' },
   ];
 
   return (

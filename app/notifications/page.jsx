@@ -48,6 +48,7 @@ export default function Notifications() {
     { icon: '👥', label: 'Clients', href: '/clients' },
     { icon: '🔔', label: 'Notifs', href: '/notifications', active: true },
     { icon: '📱', label: 'QR Code', href: '/qrcode' },
+    { icon: '⚙️', label: 'Réglages', href: '/settings' },
   ];
 
   const timeAgo = (date) => {

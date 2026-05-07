@@ -47,6 +47,7 @@ export default function Clients() {
     { icon: '👥', label: 'Clients', href: '/clients', active: true },
     { icon: '🔔', label: 'Notifs', href: '/notifications' },
     { icon: '📱', label: 'QR Code', href: '/qrcode' },
+    { icon: '⚙️', label: 'Réglages', href: '/settings' },
   ];
 
   return (
