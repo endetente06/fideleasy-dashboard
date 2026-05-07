@@ -250,9 +250,20 @@ export default function Clients() {
                     <td style={{padding:'16px 20px',color:'rgba(255,255,255,0.4)',fontSize:'14px'}}>{client.email || '—'}</td>
                     <td style={{padding:'16px 20px',color:'rgba(255,255,255,0.4)',fontSize:'14px'}}>{client.phone || '—'}</td>
                     <td style={{padding:'16px 20px'}}>
-                      <span style={{background:'rgba(212,175,55,0.1)',color:'#d4af37',borderRadius:'6px',padding:'6px 12px',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>
-                        Voir carte
-                      </span>
+                     <span 
+  onClick={async () => {
+    const res = await fetch(`${API}/cards/all`);
+    const data = await res.json();
+    const card = data.data?.find(c => c.customer_id === client.id);
+    if (card) {
+      window.open(`${API}/pass/apple/${card.id}`, '_blank');
+    } else {
+      alert('Aucune carte trouvée pour ce client');
+    }
+  }}
+  style={{background:'rgba(212,175,55,0.1)',color:'#d4af37',borderRadius:'6px',padding:'6px 12px',fontSize:'12px',fontWeight:'600',cursor:'pointer'}}>
+  Voir carte
+</span>
                     </td>
                   </tr>
                 ))}
