@@ -84,7 +84,7 @@ export default function Settings() {
     card_logo_text: '',
     card_stamp_icon: '⭐',
     card_font: 'system-ui,-apple-system,sans-serif',
-    card_background: 'solid',
+    card_background_style: 'solid',
   });
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -109,26 +109,34 @@ export default function Settings() {
         card_logo_text: s.card_logo_text || s.name || '',
         card_stamp_icon: s.card_stamp_icon || '⭐',
         card_font: s.card_font || 'system-ui,-apple-system,sans-serif',
-        card_background: s.card_background || 'solid',
+        card_background_style: s.card_background_style || 'solid',
       });
     }
   }, []);
 
   const save = async () => {
+    if (!shop || !shop.id) {
+      alert('Erreur : shop non chargé !');
+      return;
+    }
     setSaving(true);
     try {
-      await fetch(`${API}/shops/${shop.id}`, {
+      const res = await fetch(`${API}/shops/${shop.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
+      const data = await res.json();
+      console.log('Réponse PATCH:', data);
+      if (data.error) throw new Error(data.error);
       const updatedShop = { ...shop, ...form };
       localStorage.setItem('shop', JSON.stringify(updatedShop));
       setShop(updatedShop);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      console.error(err);
+      console.error('Erreur save:', err);
+      alert('Erreur: ' + err.message);
     }
     setSaving(false);
   };
@@ -149,7 +157,7 @@ export default function Settings() {
     { id: 'general', label: '⚙️ Général' },
   ];
 
-  const cardBg = getBackground(form.card_background, form.card_color);
+  const cardBg = getBackground(form.card_background_style, form.card_color);
 
   return (
     <div style={{
@@ -220,9 +228,9 @@ export default function Settings() {
                   <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>🎨 Couleur de fond</h3>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'10px'}}>
                     {COLORS.map(c => (
-                      <div key={c.value} onClick={() => setForm({...form, card_color: c.value, card_background: 'solid'})} style={{cursor:'pointer'}}>
-                        <div style={{height:'44px',borderRadius:'10px',background:c.value,border:form.card_color===c.value&&form.card_background==='solid'?'2px solid #d4af37':'2px solid transparent',transition:'border-color 0.2s',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                          {form.card_color===c.value&&form.card_background==='solid'&&<span style={{fontSize:'16px'}}>✓</span>}
+                      <div key={c.value} onClick={() => setForm({...form, card_color: c.value, card_background_style: 'solid'})} style={{cursor:'pointer'}}>
+                        <div style={{height:'44px',borderRadius:'10px',background:c.value,border:form.card_color===c.value&&form.card_background_style==='solid'?'2px solid #d4af37':'2px solid transparent',transition:'border-color 0.2s',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                          {form.card_color===c.value&&form.card_background_style==='solid'&&<span style={{fontSize:'16px'}}>✓</span>}
                         </div>
                         <p style={{fontSize:'10px',color:'rgba(255,255,255,0.4)',textAlign:'center',margin:'4px 0 0'}}>{c.label}</p>
                       </div>
@@ -237,9 +245,9 @@ export default function Settings() {
                   <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>✨ Style de fond</h3>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'10px'}}>
                     {BACKGROUNDS.map(b => (
-                      <div key={b.value} onClick={() => setForm({...form, card_background: b.value})} style={{cursor:'pointer'}}>
-                        <div style={{height:'60px',borderRadius:'10px',background:b.preview,border:form.card_background===b.value?'2px solid #d4af37':'2px solid transparent',transition:'border-color 0.2s',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                          {form.card_background===b.value&&<span style={{fontSize:'18px'}}>✓</span>}
+                      <div key={b.value} onClick={() => setForm({...form, card_background_style: b.value})} style={{cursor:'pointer'}}>
+                        <div style={{height:'60px',borderRadius:'10px',background:b.preview,border:form.card_background_style===b.value?'2px solid #d4af37':'2px solid transparent',transition:'border-color 0.2s',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                          {form.card_background_style===b.value&&<span style={{fontSize:'18px'}}>✓</span>}
                         </div>
                         <p style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',textAlign:'center',margin:'4px 0 0'}}>{b.label}</p>
                       </div>
