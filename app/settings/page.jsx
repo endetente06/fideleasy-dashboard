@@ -4,34 +4,22 @@ import { createClient } from '@supabase/supabase-js';
 
 const API = 'https://fideleasy-backend-production.up.railway.app';
 const SUPABASE_URL = 'https://gfxcwcmxnfiwfqinouow.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmeGN3Y214bmZpd2ZxaW5vdW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MDUxNDAsImV4cCI6MjA5Mjk4MTE0MH0.H3dsL_dNeoUKQmSFzFQXAX5pjPXqG0IUHAnXN6BTt9E'
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmeGN3Y214bmZpd2ZxaW5vdW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MDUxNDAsImV4cCI6MjA5Mjk4MTE0MH0.H3dsL_dNeoUKQmSFzFQXAX5pjPXqG0IUHAnXN6BTt9E';
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const STAMP_ICONS = [
-  { label: 'Étoile', value: '⭐' },
-  { label: 'Café', value: '☕' },
-  { label: 'Pizza', value: '🍕' },
-  { label: 'Ciseaux', value: '✂️' },
-  { label: 'Fleur', value: '🌸' },
-  { label: 'Cœur', value: '❤️' },
-  { label: 'Diamant', value: '💎' },
-  { label: 'Feu', value: '🔥' },
-  { label: 'Couronne', value: '👑' },
-  { label: 'Burger', value: '🍔' },
-  { label: 'Sushi', value: '🍣' },
-  { label: 'Glace', value: '🍦' },
-  { label: 'Bière', value: '🍺' },
-  { label: 'Vin', value: '🍷' },
-  { label: 'Gâteau', value: '🎂' },
-  { label: 'Sport', value: '⚽' },
-  { label: 'Musique', value: '🎵' },
-  { label: 'Livre', value: '📚' },
-  { label: 'Voiture', value: '🚗' },
-  { label: 'Maison', value: '🏠' },
-  { label: 'Soleil', value: '☀️' },
-  { label: 'Spa', value: '💆' },
-  { label: 'Gym', value: '💪' },
-  { label: 'Chien', value: '🐶' },
+  { label: 'Étoile', value: '⭐' }, { label: 'Café', value: '☕' },
+  { label: 'Pizza', value: '🍕' }, { label: 'Ciseaux', value: '✂️' },
+  { label: 'Fleur', value: '🌸' }, { label: 'Cœur', value: '❤️' },
+  { label: 'Diamant', value: '💎' }, { label: 'Feu', value: '🔥' },
+  { label: 'Couronne', value: '👑' }, { label: 'Burger', value: '🍔' },
+  { label: 'Sushi', value: '🍣' }, { label: 'Glace', value: '🍦' },
+  { label: 'Bière', value: '🍺' }, { label: 'Vin', value: '🍷' },
+  { label: 'Gâteau', value: '🎂' }, { label: 'Sport', value: '⚽' },
+  { label: 'Musique', value: '🎵' }, { label: 'Livre', value: '📚' },
+  { label: 'Voiture', value: '🚗' }, { label: 'Maison', value: '🏠' },
+  { label: 'Soleil', value: '☀️' }, { label: 'Spa', value: '💆' },
+  { label: 'Gym', value: '💪' }, { label: 'Chien', value: '🐶' },
 ];
 
 const FONTS = [
@@ -90,12 +78,15 @@ export default function Settings() {
     card_font: 'system-ui,-apple-system,sans-serif',
     card_background_style: 'solid',
     card_image_url: '',
+    loyalty_type: 'stamps',
+    points_per_euro: 1,
+    rewards: [],
   });
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [activeTab, setActiveTab] = useState('couleur');
+  const [activeTab, setActiveTab] = useState('programme');
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -117,6 +108,9 @@ export default function Settings() {
         card_font: s.card_font || 'system-ui,-apple-system,sans-serif',
         card_background_style: s.card_background_style || 'solid',
         card_image_url: s.card_image_url || '',
+        loyalty_type: s.loyalty_type || 'stamps',
+        points_per_euro: s.points_per_euro || 1,
+        rewards: s.rewards ? (typeof s.rewards === 'string' ? JSON.parse(s.rewards) : s.rewards) : [],
       });
     }
   }, []);
@@ -124,38 +118,26 @@ export default function Settings() {
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Image trop grande ! Max 2MB');
-      return;
-    }
+    if (file.size > 2 * 1024 * 1024) { alert('Image trop grande ! Max 2MB'); return; }
     setUploading(true);
     try {
       const fileName = `${shop.id}_${Date.now()}.${file.name.split('.').pop()}`;
-      const { error } = await supabaseClient.storage
-        .from('shop-images')
-        .upload(fileName, file, { upsert: true });
+      const { error } = await supabaseClient.storage.from('shop-images').upload(fileName, file, { upsert: true });
       if (error) throw error;
-      const { data: urlData } = supabaseClient.storage
-        .from('shop-images')
-        .getPublicUrl(fileName);
+      const { data: urlData } = supabaseClient.storage.from('shop-images').getPublicUrl(fileName);
       setForm(f => ({...f, card_image_url: urlData.publicUrl}));
-    } catch (err) {
-      alert('Erreur upload: ' + err.message);
-    }
+    } catch (err) { alert('Erreur upload: ' + err.message); }
     setUploading(false);
   };
 
   const save = async () => {
-    if (!shop || !shop.id) {
-      alert('Erreur : shop non chargé !');
-      return;
-    }
+    if (!shop || !shop.id) { alert('Erreur : shop non chargé !'); return; }
     setSaving(true);
     try {
       const res = await fetch(`${API}/shops/${shop.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify({ ...form, rewards: JSON.stringify(form.rewards) })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -164,9 +146,7 @@ export default function Settings() {
       setShop(updatedShop);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
-      alert('Erreur: ' + err.message);
-    }
+    } catch (err) { alert('Erreur: ' + err.message); }
     setSaving(false);
   };
 
@@ -179,6 +159,7 @@ export default function Settings() {
   ];
 
   const tabs = [
+    { id: 'programme', label: '🎯 Programme' },
     { id: 'couleur', label: '🎨 Couleur' },
     { id: 'fond', label: '✨ Fond' },
     { id: 'photo', label: '📸 Photo' },
@@ -240,12 +221,73 @@ export default function Settings() {
 
             <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)',minHeight:'300px'}}>
 
+              {activeTab === 'programme' && (
+                <div>
+                  <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>🎯 Type de programme</h3>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginBottom:'20px'}}>
+                    <div onClick={() => setForm({...form, loyalty_type: 'stamps'})} style={{background:form.loyalty_type==='stamps'?'rgba(212,175,55,0.15)':'rgba(255,255,255,0.04)',border:form.loyalty_type==='stamps'?'2px solid #d4af37':'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'16px',cursor:'pointer',textAlign:'center'}}>
+                      <div style={{fontSize:'28px',marginBottom:'8px'}}>🎫</div>
+                      <p style={{fontWeight:'600',margin:'0 0 4px',fontSize:'14px'}}>Tampons</p>
+                      <p style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',margin:0}}>Ex: 10 tampons = 1 café offert</p>
+                    </div>
+                    <div onClick={() => setForm({...form, loyalty_type: 'points'})} style={{background:form.loyalty_type==='points'?'rgba(212,175,55,0.15)':'rgba(255,255,255,0.04)',border:form.loyalty_type==='points'?'2px solid #d4af37':'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'16px',cursor:'pointer',textAlign:'center'}}>
+                      <div style={{fontSize:'28px',marginBottom:'8px'}}>⭐</div>
+                      <p style={{fontWeight:'600',margin:'0 0 4px',fontSize:'14px'}}>Points</p>
+                      <p style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',margin:0}}>Ex: 1€ = 1 point</p>
+                    </div>
+                  </div>
+
+                  {form.loyalty_type === 'stamps' && (
+                    <div>
+                      <label style={{fontSize:'12px',color:'rgba(255,255,255,0.5)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.8px',display:'block',marginBottom:'8px'}}>Tampons pour récompense</label>
+                      <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
+                        {[5,8,10,12,15,20].map(n => (
+                          <button key={n} onClick={() => setForm({...form,card_stamps_required:n})} style={{background:form.card_stamps_required===n?'#d4af37':'rgba(255,255,255,0.06)',color:form.card_stamps_required===n?'white':'rgba(255,255,255,0.6)',border:form.card_stamps_required===n?'none':'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'8px 16px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                      <p style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',margin:'8px 0 0'}}>{form.card_stamps_required} tampons = 1 récompense</p>
+                    </div>
+                  )}
+
+                  {form.loyalty_type === 'points' && (
+                    <div>
+                      <div style={{marginBottom:'16px'}}>
+                        <label style={{fontSize:'12px',color:'rgba(255,255,255,0.5)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.8px',display:'block',marginBottom:'8px'}}>Points par euro dépensé</label>
+                        <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
+                          {[1,2,5,10].map(n => (
+                            <button key={n} onClick={() => setForm({...form,points_per_euro:n})} style={{background:form.points_per_euro===n?'#d4af37':'rgba(255,255,255,0.06)',color:form.points_per_euro===n?'white':'rgba(255,255,255,0.6)',border:form.points_per_euro===n?'none':'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'8px 16px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
+                              {n} pt/€
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{fontSize:'12px',color:'rgba(255,255,255,0.5)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.8px',display:'block',marginBottom:'8px'}}>Récompenses</label>
+                        {form.rewards.map((reward, i) => (
+                          <div key={i} style={{display:'flex',gap:'8px',marginBottom:'8px',alignItems:'center'}}>
+                            <input type="number" value={reward.points} onChange={e => { const r=[...form.rewards]; r[i]={...r[i],points:parseInt(e.target.value)}; setForm({...form,rewards:r}); }} placeholder="Points" style={{width:'80px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'8px',color:'white',fontSize:'13px',outline:'none'}}/>
+                            <span style={{color:'rgba(255,255,255,0.4)',fontSize:'13px'}}>pts =</span>
+                            <input value={reward.reward} onChange={e => { const r=[...form.rewards]; r[i]={...r[i],reward:e.target.value}; setForm({...form,rewards:r}); }} placeholder="Ex: Café offert" style={{flex:1,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'8px',color:'white',fontSize:'13px',outline:'none'}}/>
+                            <button onClick={() => setForm({...form,rewards:form.rewards.filter((_,j)=>j!==i)})} style={{background:'rgba(239,68,68,0.1)',color:'#fca5a5',border:'none',borderRadius:'6px',padding:'6px 10px',cursor:'pointer',fontSize:'12px'}}>✕</button>
+                          </div>
+                        ))}
+                        <button onClick={() => setForm({...form,rewards:[...form.rewards,{points:100,reward:''}]})} style={{background:'rgba(212,175,55,0.1)',color:'#d4af37',border:'1px solid rgba(212,175,55,0.3)',borderRadius:'8px',padding:'8px 16px',cursor:'pointer',fontSize:'13px',marginTop:'4px'}}>
+                          + Ajouter une récompense
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {activeTab === 'couleur' && (
                 <div>
                   <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>🎨 Couleur de fond</h3>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'10px'}}>
                     {COLORS.map(c => (
-                      <div key={c.value} onClick={() => setForm({...form, card_color: c.value, card_background_style: 'solid'})} style={{cursor:'pointer'}}>
+                      <div key={c.value} onClick={() => setForm({...form,card_color:c.value,card_background_style:'solid'})} style={{cursor:'pointer'}}>
                         <div style={{height:'44px',borderRadius:'10px',background:c.value,border:form.card_color===c.value&&form.card_background_style==='solid'?'2px solid #d4af37':'2px solid transparent',display:'flex',alignItems:'center',justifyContent:'center'}}>
                           {form.card_color===c.value&&form.card_background_style==='solid'&&<span style={{fontSize:'16px'}}>✓</span>}
                         </div>
@@ -261,7 +303,7 @@ export default function Settings() {
                   <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>✨ Style de fond</h3>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'10px'}}>
                     {BACKGROUNDS.map(b => (
-                      <div key={b.value} onClick={() => setForm({...form, card_background_style: b.value})} style={{cursor:'pointer'}}>
+                      <div key={b.value} onClick={() => setForm({...form,card_background_style:b.value})} style={{cursor:'pointer'}}>
                         <div style={{height:'60px',borderRadius:'10px',background:b.preview,border:form.card_background_style===b.value?'2px solid #d4af37':'2px solid transparent',display:'flex',alignItems:'center',justifyContent:'center'}}>
                           {form.card_background_style===b.value&&<span style={{fontSize:'18px'}}>✓</span>}
                         </div>
@@ -275,29 +317,14 @@ export default function Settings() {
               {activeTab === 'photo' && (
                 <div>
                   <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>📸 Photo de votre commerce</h3>
-                  <p style={{fontSize:'13px',color:'rgba(255,255,255,0.4)',marginBottom:'16px'}}>
-                    Cette photo apparaîtra comme bannière sur votre carte
-                  </p>
-                  <div style={{border:'2px dashed rgba(212,175,55,0.3)',borderRadius:'12px',padding:'24px',textAlign:'center',marginBottom:'16px',cursor:'pointer',background:'rgba(212,175,55,0.03)'}}
-                    onClick={() => document.getElementById('photo-upload').click()}>
-                    {uploading ? (
-                      <p style={{color:'rgba(255,255,255,0.5)'}}>⏳ Upload en cours...</p>
-                    ) : form.card_image_url ? (
-                      <img src={form.card_image_url} alt="Commerce" style={{width:'100%',height:'120px',objectFit:'cover',borderRadius:'8px'}}/>
-                    ) : (
-                      <div>
-                        <div style={{fontSize:'40px',marginBottom:'12px'}}>📸</div>
-                        <p style={{color:'rgba(255,255,255,0.5)',fontSize:'14px',margin:0}}>Cliquez pour uploader une photo</p>
-                        <p style={{color:'rgba(255,255,255,0.3)',fontSize:'12px',margin:'4px 0 0'}}>JPG, PNG — Max 2MB</p>
-                      </div>
-                    )}
+                  <p style={{fontSize:'13px',color:'rgba(255,255,255,0.4)',marginBottom:'16px'}}>Cette photo apparaîtra comme bannière sur votre carte</p>
+                  <div style={{border:'2px dashed rgba(212,175,55,0.3)',borderRadius:'12px',padding:'24px',textAlign:'center',marginBottom:'16px',cursor:'pointer',background:'rgba(212,175,55,0.03)'}} onClick={() => document.getElementById('photo-upload').click()}>
+                    {uploading ? <p style={{color:'rgba(255,255,255,0.5)'}}>⏳ Upload en cours...</p>
+                    : form.card_image_url ? <img src={form.card_image_url} alt="Commerce" style={{width:'100%',height:'120px',objectFit:'cover',borderRadius:'8px'}}/>
+                    : <div><div style={{fontSize:'40px',marginBottom:'12px'}}>📸</div><p style={{color:'rgba(255,255,255,0.5)',fontSize:'14px',margin:0}}>Cliquez pour uploader une photo</p><p style={{color:'rgba(255,255,255,0.3)',fontSize:'12px',margin:'4px 0 0'}}>JPG, PNG — Max 2MB</p></div>}
                   </div>
                   <input id="photo-upload" type="file" accept="image/*" style={{display:'none'}} onChange={handlePhotoUpload}/>
-                  {form.card_image_url && (
-                    <button onClick={() => setForm({...form, card_image_url: ''})} style={{background:'rgba(239,68,68,0.1)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'8px 16px',cursor:'pointer',fontSize:'13px'}}>
-                      🗑️ Supprimer la photo
-                    </button>
-                  )}
+                  {form.card_image_url && <button onClick={() => setForm({...form,card_image_url:''})} style={{background:'rgba(239,68,68,0.1)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'8px 16px',cursor:'pointer',fontSize:'13px'}}>🗑️ Supprimer la photo</button>}
                 </div>
               )}
 
@@ -306,7 +333,7 @@ export default function Settings() {
                   <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>🏷️ Icône de tampon</h3>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:'8px',maxHeight:'250px',overflowY:'auto'}}>
                     {STAMP_ICONS.map(icon => (
-                      <div key={icon.value} onClick={() => setForm({...form, card_stamp_icon: icon.value})} style={{width:'44px',height:'44px',borderRadius:'10px',background:form.card_stamp_icon===icon.value?'rgba(212,175,55,0.3)':'rgba(255,255,255,0.06)',border:form.card_stamp_icon===icon.value?'2px solid #d4af37':'2px solid transparent',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px',cursor:'pointer',transition:'all 0.2s'}}>
+                      <div key={icon.value} onClick={() => setForm({...form,card_stamp_icon:icon.value})} style={{width:'44px',height:'44px',borderRadius:'10px',background:form.card_stamp_icon===icon.value?'rgba(212,175,55,0.3)':'rgba(255,255,255,0.06)',border:form.card_stamp_icon===icon.value?'2px solid #d4af37':'2px solid transparent',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px',cursor:'pointer',transition:'all 0.2s'}}>
                         {icon.value}
                       </div>
                     ))}
@@ -319,7 +346,7 @@ export default function Settings() {
                   <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>✍️ Police d'écriture</h3>
                   <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
                     {FONTS.map(f => (
-                      <div key={f.value} onClick={() => setForm({...form, card_font: f.value})} style={{background:form.card_font===f.value?'rgba(212,175,55,0.1)':'rgba(255,255,255,0.04)',border:form.card_font===f.value?'1px solid rgba(212,175,55,0.4)':'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'14px 16px',cursor:'pointer',transition:'all 0.2s'}}>
+                      <div key={f.value} onClick={() => setForm({...form,card_font:f.value})} style={{background:form.card_font===f.value?'rgba(212,175,55,0.1)':'rgba(255,255,255,0.04)',border:form.card_font===f.value?'1px solid rgba(212,175,55,0.4)':'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'14px 16px',cursor:'pointer',transition:'all 0.2s'}}>
                         <p style={{fontFamily:f.value,fontSize:'16px',margin:'0 0 4px',color:'white'}}>{f.label}</p>
                         <p style={{fontFamily:f.value,fontSize:'12px',margin:0,color:'rgba(255,255,255,0.4)'}}>Café de la Plage · 7/10 tampons</p>
                       </div>
@@ -333,19 +360,7 @@ export default function Settings() {
                   <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>⚙️ Paramètres généraux</h3>
                   <div style={{marginBottom:'16px'}}>
                     <label style={{fontSize:'12px',color:'rgba(255,255,255,0.5)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.8px',display:'block',marginBottom:'8px'}}>Nom affiché sur la carte</label>
-                    <input value={form.card_logo_text} onChange={e => setForm({...form, card_logo_text: e.target.value})} placeholder="Nom de votre commerce" style={{width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'10px 12px',color:'white',fontSize:'14px',boxSizing:'border-box',outline:'none'}}
-                      onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
-                  </div>
-                  <div>
-                    <label style={{fontSize:'12px',color:'rgba(255,255,255,0.5)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.8px',display:'block',marginBottom:'8px'}}>Tampons pour récompense</label>
-                    <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
-                      {[5, 8, 10, 12, 15, 20].map(n => (
-                        <button key={n} onClick={() => setForm({...form, card_stamps_required: n})} style={{background:form.card_stamps_required===n?'#d4af37':'rgba(255,255,255,0.06)',color:form.card_stamps_required===n?'white':'rgba(255,255,255,0.6)',border:form.card_stamps_required===n?'none':'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'8px 16px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
-                          {n}
-                        </button>
-                      ))}
-                    </div>
-                    <p style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',margin:'8px 0 0'}}>{form.card_stamps_required} tampons = 1 récompense</p>
+                    <input value={form.card_logo_text} onChange={e => setForm({...form,card_logo_text:e.target.value})} placeholder="Nom de votre commerce" style={{width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'10px 12px',color:'white',fontSize:'14px',boxSizing:'border-box',outline:'none'}} onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
                   </div>
                 </div>
               )}
@@ -359,25 +374,36 @@ export default function Settings() {
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'24px',backdropFilter:'blur(10px)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',position:isMobile?'static':'sticky',top:'32px',alignSelf:'flex-start'}}>
             <h3 style={{margin:'0 0 24px',fontSize:'15px',fontWeight:'600',alignSelf:'flex-start'}}>👁️ Aperçu en temps réel</h3>
             <div style={{width:'100%',maxWidth:'300px',background:cardBg,borderRadius:'20px',overflow:'hidden',border:'1px solid rgba(212,175,55,0.2)',boxShadow:'0 20px 60px rgba(0,0,0,0.5)',fontFamily:form.card_font}}>
-              {form.card_image_url && (
-                <img src={form.card_image_url} alt="Commerce" style={{width:'100%',height:'100px',objectFit:'cover'}}/>
-              )}
+              {form.card_image_url && <img src={form.card_image_url} alt="Commerce" style={{width:'100%',height:'100px',objectFit:'cover'}}/>}
               <div style={{padding:'20px'}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
                   <span style={{fontSize:'14px',color:'rgba(255,255,255,0.8)',fontWeight:'700'}}>{form.card_logo_text || shop?.name || 'FidelEasy'}</span>
                   <span style={{fontSize:'20px'}}>🍎</span>
                 </div>
-                <div style={{fontSize:'28px',fontWeight:'800',color:'#d4af37',marginBottom:'4px'}}>0</div>
-                <div style={{fontSize:'12px',color:'rgba(255,255,255,0.5)',marginBottom:'16px'}}>Points</div>
-                <div style={{display:'flex',gap:'5px',flexWrap:'wrap',marginBottom:'12px'}}>
-                  {[...Array(Math.min(form.card_stamps_required, 15))].map((_,i) => (
-                    <div key={i} style={{width:'20px',height:'20px',borderRadius:'50%',background:i===0?'rgba(212,175,55,0.9)':'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px'}}>
-                      {i===0?form.card_stamp_icon:''}
+                {form.loyalty_type === 'points' ? (
+                  <div>
+                    <div style={{fontSize:'28px',fontWeight:'800',color:'#d4af37',marginBottom:'4px'}}>0</div>
+                    <div style={{fontSize:'12px',color:'rgba(255,255,255,0.5)',marginBottom:'12px'}}>Points — {form.points_per_euro} pt/€</div>
+                    {form.rewards.length > 0 && (
+                      <div style={{background:'rgba(212,175,55,0.1)',borderRadius:'8px',padding:'8px',fontSize:'11px',color:'#d4af37'}}>
+                        🎁 Prochaine récompense : {form.rewards[0]?.points} pts = {form.rewards[0]?.reward}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{display:'flex',gap:'5px',flexWrap:'wrap',marginBottom:'12px'}}>
+                      {[...Array(Math.min(form.card_stamps_required, 15))].map((_,i) => (
+                        <div key={i} style={{width:'20px',height:'20px',borderRadius:'50%',background:i===0?'rgba(212,175,55,0.9)':'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px'}}>
+                          {i===0?form.card_stamp_icon:''}
+                        </div>
+                      ))}
+                      {form.card_stamps_required > 15 && <span style={{fontSize:'10px',color:'rgba(255,255,255,0.3)',alignSelf:'center'}}>+{form.card_stamps_required-15}</span>}
                     </div>
-                  ))}
-                  {form.card_stamps_required > 15 && <span style={{fontSize:'10px',color:'rgba(255,255,255,0.3)',alignSelf:'center'}}>+{form.card_stamps_required-15}</span>}
-                </div>
-                <div style={{fontSize:'11px',color:'rgba(255,255,255,0.4)'}}>Prénom Nom</div>
+                    <div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)'}}>{form.card_stamps_required} tampons = 1 récompense</div>
+                  </div>
+                )}
+                <div style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',marginTop:'8px'}}>Prénom Nom</div>
               </div>
             </div>
             <p style={{fontSize:'11px',color:'rgba(255,255,255,0.3)',marginTop:'16px',textAlign:'center'}}>L'aperçu se met à jour en temps réel ✨</p>
