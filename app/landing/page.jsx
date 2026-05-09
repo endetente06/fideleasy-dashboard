@@ -8,10 +8,9 @@ const PHOTOS = {
   notif: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80',
   dashboard: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
   cafe: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1200&q=80',
-  client: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80',
-  commerce: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80',
+  client: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?w=800&q=80',
+commerce: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
 };
-
 export default function Landing() {
   const [billing, setBilling] = useState('monthly');
   const [faqOpen, setFaqOpen] = useState(null);
@@ -182,8 +181,8 @@ export default function Landing() {
         <div style={{maxWidth:'900px',margin:'0 auto',display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:'20px'}}>
           {[
             { name: 'Sophie M.', role: 'Café à Antibes', text: '"Mes clients adorent avoir leur carte directement dans leur iPhone. Les tampons papier c\'est fini !"', photo: PHOTOS.client },
-            { name: 'Marc L.', role: 'Restaurant à Nice', text: '"En 2 semaines j\'avais déjà 50 clients inscrits. La configuration est ultra simple."', photo: PHOTOS.commerce },
-            { name: 'Julie R.', role: 'Boutique à Cannes', text: '"Les notifications push fonctionnent vraiment bien. Je vois mes clients revenir plus souvent."', photo: PHOTOS.cafe },
+{ name: 'Marc L.', role: 'Restaurant à Nice', text: '"En 2 semaines j\'avais déjà 50 clients inscrits. La configuration est ultra simple."', photo: PHOTOS.commerce },
+{ name: 'Julie R.', role: 'Boutique à Cannes', text: '"Les notifications push fonctionnent vraiment bien. Je vois mes clients revenir plus souvent."', photo: PHOTOS.cafe },
           ].map((t, i) => (
             <div key={i} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'20px',overflow:'hidden'}}>
               <img src={t.photo} alt={t.name} style={{width:'100%',height:'160px',objectFit:'cover',display:'block'}}/>
