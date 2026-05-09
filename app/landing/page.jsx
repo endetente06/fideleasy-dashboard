@@ -8,7 +8,8 @@ const PHOTOS = {
   notif: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80',
   dashboard: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
   cafe: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1200&q=80',
-  client: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?w=800&q=80',
+  client: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
+boutique: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&q=80',
 commerce: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
 };
 export default function Landing() {
@@ -182,7 +183,7 @@ export default function Landing() {
           {[
             { name: 'Sophie M.', role: 'Café à Antibes', text: '"Mes clients adorent avoir leur carte directement dans leur iPhone. Les tampons papier c\'est fini !"', photo: PHOTOS.client },
 { name: 'Marc L.', role: 'Restaurant à Nice', text: '"En 2 semaines j\'avais déjà 50 clients inscrits. La configuration est ultra simple."', photo: PHOTOS.commerce },
-{ name: 'Julie R.', role: 'Boutique à Cannes', text: '"Les notifications push fonctionnent vraiment bien. Je vois mes clients revenir plus souvent."', photo: PHOTOS.cafe },
+{ name: 'Julie R.', role: 'Boutique à Cannes', text: '"Les notifications push fonctionnent vraiment bien. Je vois mes clients revenir plus souvent."', photo: PHOTOS.boutique },
           ].map((t, i) => (
             <div key={i} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'20px',overflow:'hidden'}}>
               <img src={t.photo} alt={t.name} style={{width:'100%',height:'160px',objectFit:'cover',display:'block'}}/>
