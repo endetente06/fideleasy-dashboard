@@ -8,7 +8,7 @@ const PHOTOS = {
   notif: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80',
   dashboard: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
   cafe: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1200&q=80',
-  client: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
+  client: 'https://images.unsplash.com/photo-1559305616-3f99cd43e353?w=800&q=80',
 boutique: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&q=80',
 commerce: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
 };
