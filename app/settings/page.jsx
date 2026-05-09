@@ -76,8 +76,6 @@ export default function Settings() {
     card_logo_text: '',
     card_stamp_icon: '⭐',
     card_font: 'system-ui,-apple-system,sans-serif',
-    card_background_style: 'solid',
-    card_image_url: '',
     loyalty_type: 'stamps',
     points_per_euro: 1,
     rewards: [],
@@ -106,8 +104,6 @@ export default function Settings() {
         card_logo_text: s.card_logo_text || s.name || '',
         card_stamp_icon: s.card_stamp_icon || '⭐',
         card_font: s.card_font || 'system-ui,-apple-system,sans-serif',
-        card_background_style: s.card_background_style || 'solid',
-        card_image_url: s.card_image_url || '',
         loyalty_type: s.loyalty_type || 'stamps',
         points_per_euro: s.points_per_euro || 1,
         rewards: s.rewards ? (typeof s.rewards === 'string' ? JSON.parse(s.rewards) : s.rewards) : [],
@@ -159,14 +155,12 @@ export default function Settings() {
   ];
 
   const tabs = [
-    { id: 'programme', label: '🎯 Programme' },
-    { id: 'couleur', label: '🎨 Couleur' },
-    { id: 'fond', label: '✨ Fond' },
-    { id: 'photo', label: '📸 Photo' },
-    { id: 'icone', label: '🏷️ Icône' },
-    { id: 'police', label: '✍️ Police' },
-    { id: 'general', label: '⚙️ Général' },
-  ];
+  { id: 'programme', label: '🎯 Programme' },
+  { id: 'couleur', label: '🎨 Couleur' },
+  { id: 'icone', label: '🏷️ Icône' },
+  { id: 'police', label: '✍️ Police' },
+  { id: 'general', label: '⚙️ Général' },
+];
 
   const cardBg = getBackground(form.card_background_style, form.card_color);
 
@@ -298,35 +292,6 @@ export default function Settings() {
                 </div>
               )}
 
-              {activeTab === 'fond' && (
-                <div>
-                  <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>✨ Style de fond</h3>
-                  <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'10px'}}>
-                    {BACKGROUNDS.map(b => (
-                      <div key={b.value} onClick={() => setForm({...form,card_background_style:b.value})} style={{cursor:'pointer'}}>
-                        <div style={{height:'60px',borderRadius:'10px',background:b.preview,border:form.card_background_style===b.value?'2px solid #d4af37':'2px solid transparent',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                          {form.card_background_style===b.value&&<span style={{fontSize:'18px'}}>✓</span>}
-                        </div>
-                        <p style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',textAlign:'center',margin:'4px 0 0'}}>{b.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'photo' && (
-                <div>
-                  <h3 style={{margin:'0 0 16px',fontSize:'15px',fontWeight:'600'}}>📸 Photo de votre commerce</h3>
-                  <p style={{fontSize:'13px',color:'rgba(255,255,255,0.4)',marginBottom:'16px'}}>Cette photo apparaîtra comme bannière sur votre carte</p>
-                  <div style={{border:'2px dashed rgba(212,175,55,0.3)',borderRadius:'12px',padding:'24px',textAlign:'center',marginBottom:'16px',cursor:'pointer',background:'rgba(212,175,55,0.03)'}} onClick={() => document.getElementById('photo-upload').click()}>
-                    {uploading ? <p style={{color:'rgba(255,255,255,0.5)'}}>⏳ Upload en cours...</p>
-                    : form.card_image_url ? <img src={form.card_image_url} alt="Commerce" style={{width:'100%',height:'120px',objectFit:'cover',borderRadius:'8px'}}/>
-                    : <div><div style={{fontSize:'40px',marginBottom:'12px'}}>📸</div><p style={{color:'rgba(255,255,255,0.5)',fontSize:'14px',margin:0}}>Cliquez pour uploader une photo</p><p style={{color:'rgba(255,255,255,0.3)',fontSize:'12px',margin:'4px 0 0'}}>JPG, PNG — Max 2MB</p></div>}
-                  </div>
-                  <input id="photo-upload" type="file" accept="image/*" style={{display:'none'}} onChange={handlePhotoUpload}/>
-                  {form.card_image_url && <button onClick={() => setForm({...form,card_image_url:''})} style={{background:'rgba(239,68,68,0.1)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'8px 16px',cursor:'pointer',fontSize:'13px'}}>🗑️ Supprimer la photo</button>}
-                </div>
-              )}
 
               {activeTab === 'icone' && (
                 <div>
