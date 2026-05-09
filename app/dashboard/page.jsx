@@ -102,14 +102,14 @@ export default function Dashboard() {
             }}>
               <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'0 0 4px'}}>Plan actuel</p>
               <p style={{fontSize:'14px',fontWeight:'600',color:'#d4af37',margin:'0 0 12px',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
-              <a href="#" style={{
-                display:'block',textAlign:'center',
-                background:'#d4af37',color:'white',
-                borderRadius:'8px',padding:'8px',
-                fontSize:'12px',textDecoration:'none',fontWeight:'600'
-              }}>
-                Mettre à niveau
-              </a>
+              <a href="/landing#pricing" style={{
+  display:'block',textAlign:'center',
+  background:'#d4af37',color:'white',
+  borderRadius:'8px',padding:'8px',
+  fontSize:'12px',textDecoration:'none',fontWeight:'600'
+}}>
+  Mettre à niveau
+</a>
             </div>
           </div>
         </div>
