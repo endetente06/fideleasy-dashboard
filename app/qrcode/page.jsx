@@ -15,16 +15,14 @@ export default function QRCode() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const shopId = typeof window !== 'undefined'
-    ? (JSON.parse(localStorage.getItem('shop') || '{}').id || 'a23f70ea-db85-46b4-9bd1-c650831b134a')
-    : 'a23f70ea-db85-46b4-9bd1-c650831b134a';
-
   useEffect(() => {
+    const shopData = localStorage.getItem('shop');
+    const shopId = shopData ? JSON.parse(shopData).id : null;
+    if (!shopId) { setLoading(false); return; }
     fetch(`${API}/qrcode/${shopId}`)
       .then(r => r.json())
       .then(d => { setQrData(d); setLoading(false); });
   }, []);
-
   const navItems = [
     { icon: '📊', label: 'Dashboard', href: '/dashboard' },
     { icon: '👥', label: 'Clients', href: '/clients' },
