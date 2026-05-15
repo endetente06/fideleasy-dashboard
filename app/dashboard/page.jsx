@@ -6,6 +6,7 @@ const API = 'https://fideleasy-backend-production.up.railway.app';
 export default function Dashboard() {
   const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, stamps: 0 });
   const [recentClients, setRecentClients] = useState([]);
+  const [proStats, setProStats] = useState(null);
   const [shop, setShop] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -40,6 +41,12 @@ export default function Dashboard() {
       setRecentClients(customers.data?.slice(-5).reverse() || []);
       setLoading(false);
     });
+
+    if (s.plan === 'pro' || s.plan === 'business') {
+      fetch(`${API}/stats/${shopId}`)
+        .then(r => r.json())
+        .then(d => setProStats(d));
+    }
   }, []);
 
   const navItems = [
@@ -51,10 +58,10 @@ export default function Dashboard() {
   ];
 
   const statCards = [
-    { icon: '👥', label: 'Clients', value: stats.clients, color: '#d4af37', bg: 'rgba(212,175,55,0.1)', suffix: '' },
-    { icon: '💳', label: 'Cartes actives', value: stats.cards, color: '#22c55e', bg: 'rgba(34,197,94,0.1)', suffix: '' },
-    { icon: '🎫', label: 'Tampons total', value: stats.stamps, color: '#a855f7', bg: 'rgba(168,85,247,0.1)', suffix: '' },
-    { icon: '🔔', label: 'Notifications', value: stats.notifications, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', suffix: '' },
+    { icon: '👥', label: 'Clients', value: stats.clients, color: '#d4af37', bg: 'rgba(212,175,55,0.1)' },
+    { icon: '💳', label: 'Cartes actives', value: stats.cards, color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
+    { icon: '🎫', label: 'Tampons total', value: stats.stamps, color: '#a855f7', bg: 'rgba(168,85,247,0.1)' },
+    { icon: '🔔', label: 'Notifications', value: stats.notifications, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
   ];
 
   return (
@@ -123,8 +130,6 @@ export default function Dashboard() {
 
         {/* Grille principale */}
         <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
-          
-          {/* Clients récents */}
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
               <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:'rgba(255,255,255,0.8)'}}>👥 Derniers clients</h3>
@@ -152,7 +157,6 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Actions rapides + Info plan */}
           <div style={{display:'flex',flexDirection:'column',gap:'16px'}}>
             <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
               <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 14px',color:'rgba(255,255,255,0.8)'}}>⚡ Actions rapides</h3>
@@ -172,7 +176,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Info plan */}
             <div style={{background:'rgba(212,175,55,0.06)',border:'1px solid rgba(212,175,55,0.15)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
                 <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:'rgba(255,255,255,0.8)'}}>⭐ Mon plan</h3>
@@ -197,8 +200,62 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Dashboard Pro */}
+        {(shop?.plan === 'pro' || shop?.plan === 'business') && proStats && (
+          <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'16px',marginTop:'16px'}}>
+            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+              <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>📈 Tampons cette semaine</h3>
+              <div style={{display:'flex',alignItems:'flex-end',gap:'8px',height:'80px'}}>
+                {proStats.stampsByDay.map((d, i) => {
+                  const max = Math.max(...proStats.stampsByDay.map(x => x.count), 1);
+                  const height = Math.max((d.count / max) * 70, 4);
+                  return (
+                    <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'4px'}}>
+                      <span style={{fontSize:'10px',color:'#d4af37',fontWeight:'600'}}>{d.count > 0 ? d.count : ''}</span>
+                      <div style={{width:'100%',height:`${height}px`,background:d.count>0?'#d4af37':'rgba(255,255,255,0.08)',borderRadius:'4px'}}/>
+                      <span style={{fontSize:'9px',color:'rgba(255,255,255,0.3)'}}>{d.day}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'12px 0 0'}}>Total cette semaine : <span style={{color:'#d4af37',fontWeight:'700'}}>{proStats.weekStamps} tampons</span></p>
+            </div>
+
+            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+              <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>🏆 Top clients</h3>
+              {proStats.topClients.length === 0 ? (
+                <p style={{color:'rgba(255,255,255,0.3)',fontSize:'13px'}}>Aucun client pour l'instant</p>
+              ) : (
+                <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+                  {proStats.topClients.map((card, i) => (
+                    <div key={card.id} style={{display:'flex',alignItems:'center',gap:'10px',padding:'8px',background:'rgba(255,255,255,0.03)',borderRadius:'8px'}}>
+                      <span style={{fontSize:'14px',fontWeight:'700',color:i===0?'#d4af37':i===1?'#94a3b8':i===2?'#cd7c3a':'rgba(255,255,255,0.4)',width:'20px'}}>#{i+1}</span>
+                      <div style={{flex:1}}>
+                        <div style={{display:'flex',alignItems:'center',gap:'4px',marginTop:'2px'}}>
+                          <div style={{height:'4px',borderRadius:'2px',background:'#d4af37',width:`${Math.min(((card.stamps||0)/10)*100, 100)}%`,maxWidth:'80px'}}/>
+                          <span style={{fontSize:'10px',color:'rgba(255,255,255,0.4)'}}>{card.stamps || 0} tampons</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {proStats.inactiveCount > 0 && (
+              <div style={{background:'rgba(239,68,68,0.06)',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)',gridColumn:isMobile?'1':'1/-1'}}>
+                <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 8px',color:'#fca5a5'}}>⚠️ Clients inactifs</h3>
+                <p style={{fontSize:'13px',color:'rgba(255,255,255,0.5)',margin:'0 0 12px'}}>{proStats.inactiveCount} client{proStats.inactiveCount > 1 ? 's' : ''} n'ont pas été tamponnés depuis 30 jours</p>
+                <a href="/notifications" style={{display:'inline-block',background:'rgba(239,68,68,0.15)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'8px 16px',fontSize:'13px',fontWeight:'600',textDecoration:'none'}}>
+                  🔔 Envoyer une offre de relance →
+                </a>
+              </div>
+            )}
+          </div>
+        )}
+
         {isMobile && (
-          <a href="/clients" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'12px',padding:'14px',textDecoration:'none',fontSize:'15px',fontWeight:'700',boxShadow:'0 4px 20px rgba(212,175,55,0.3)'}}>
+          <a href="/clients" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'12px',padding:'14px',textDecoration:'none',fontSize:'15px',fontWeight:'700',boxShadow:'0 4px 20px rgba(212,175,55,0.3)',marginTop:'16px'}}>
             + Ajouter un client
           </a>
         )}
