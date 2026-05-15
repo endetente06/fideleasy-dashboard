@@ -18,12 +18,11 @@ export default function Clients() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const shopId = typeof window !== 'undefined'
-    ? (JSON.parse(localStorage.getItem('shop') || '{}').id || null)
-    : null;
-
   useEffect(() => {
-    if (!shopId) return;
+    const shopData = localStorage.getItem('shop');
+    if (!shopData) { setLoading(false); return; }
+    const shopId = JSON.parse(shopData).id;
+    if (!shopId) { setLoading(false); return; }
     fetch(`${API}/customers/${shopId}`)
       .then(r => r.json())
       .then(d => { setClients(d.data || []); setLoading(false); });
