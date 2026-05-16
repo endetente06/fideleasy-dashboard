@@ -200,59 +200,148 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Dashboard Pro */}
-        {(shop?.plan === 'pro' || shop?.plan === 'business') && proStats && (
-          <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'16px',marginTop:'16px'}}>
-            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-              <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>📈 Tampons cette semaine</h3>
-              <div style={{display:'flex',alignItems:'flex-end',gap:'8px',height:'80px'}}>
-                {proStats.stampsByDay.map((d, i) => {
-                  const max = Math.max(...proStats.stampsByDay.map(x => x.count), 1);
-                  const height = Math.max((d.count / max) * 70, 4);
-                  return (
-                    <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'4px'}}>
-                      <span style={{fontSize:'10px',color:'#d4af37',fontWeight:'600'}}>{d.count > 0 ? d.count : ''}</span>
-                      <div style={{width:'100%',height:`${height}px`,background:d.count>0?'#d4af37':'rgba(255,255,255,0.08)',borderRadius:'4px'}}/>
-                      <span style={{fontSize:'9px',color:'rgba(255,255,255,0.3)'}}>{d.day}</span>
-                    </div>
-                  );
-                })}
-              </div>
-              <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'12px 0 0'}}>Total cette semaine : <span style={{color:'#d4af37',fontWeight:'700'}}>{proStats.weekStamps} tampons</span></p>
-            </div>
+        {/* Dashboard Pro & Business */}
+{(shop?.plan === 'pro' || shop?.plan === 'business') && proStats && (
+  <div style={{display:'flex',flexDirection:'column',gap:'16px',marginTop:'16px'}}>
+    
+    {/* Stats rapides Pro */}
+    <div style={{display:'grid',gridTemplateColumns:isMobile?'repeat(2,1fr)':'repeat(4,1fr)',gap:'12px'}}>
+      {[
+        { icon:'📈', label:'Tampons cette semaine', value: proStats.weekStamps, color:'#22c55e', bg:'rgba(34,197,94,0.1)', suffix:'' },
+        { icon:'🔄', label:'Taux de rétention', value: proStats.retentionRate, color:'#a855f7', bg:'rgba(168,85,247,0.1)', suffix:'%' },
+        { icon:'🏆', label:'Cartes complétées', value: proStats.completedCards, color:'#d4af37', bg:'rgba(212,175,55,0.1)', suffix:'' },
+        { icon:'📅', label:'Tampons ce mois', value: proStats.monthStamps, color:'#3b82f6', bg:'rgba(59,130,246,0.1)', suffix:'' },
+      ].map(card => (
+        <div key={card.label} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:isMobile?'14px':'18px',backdropFilter:'blur(10px)'}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'8px'}}>
+            <span style={{fontSize:'10px',color:'rgba(255,255,255,0.4)',textTransform:'uppercase',letterSpacing:'0.8px'}}>{card.label}</span>
+            <div style={{width:'28px',height:'28px',borderRadius:'8px',background:card.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px'}}>{card.icon}</div>
+          </div>
+          <p style={{fontSize:isMobile?'22px':'26px',fontWeight:'700',margin:0,color:card.color}}>
+            {card.value}{card.suffix}
+          </p>
+        </div>
+      ))}
+    </div>
 
-            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-              <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>🏆 Top clients</h3>
-              {proStats.topClients.length === 0 ? (
-                <p style={{color:'rgba(255,255,255,0.3)',fontSize:'13px'}}>Aucun client pour l'instant</p>
-              ) : (
-                <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-                  {proStats.topClients.map((card, i) => (
-                    <div key={card.id} style={{display:'flex',alignItems:'center',gap:'10px',padding:'8px',background:'rgba(255,255,255,0.03)',borderRadius:'8px'}}>
-                      <span style={{fontSize:'14px',fontWeight:'700',color:i===0?'#d4af37':i===1?'#94a3b8':i===2?'#cd7c3a':'rgba(255,255,255,0.4)',width:'20px'}}>#{i+1}</span>
-                      <div style={{flex:1}}>
-                        <div style={{display:'flex',alignItems:'center',gap:'4px',marginTop:'2px'}}>
-                          <div style={{height:'4px',borderRadius:'2px',background:'#d4af37',width:`${Math.min(((card.stamps||0)/10)*100, 100)}%`,maxWidth:'80px'}}/>
-                          <span style={{fontSize:'10px',color:'rgba(255,255,255,0.4)'}}>{card.stamps || 0} tampons</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+    {/* Graphique + Top clients */}
+    <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'16px'}}>
+      <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
+          <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:'rgba(255,255,255,0.8)'}}>📈 Tampons cette semaine</h3>
+          <span style={{fontSize:'12px',color:proStats.weekGrowth>=0?'#22c55e':'#ef4444',fontWeight:'600'}}>
+            {proStats.weekGrowth>=0?'+':''}{proStats.weekGrowth}% vs semaine dernière
+          </span>
+        </div>
+        <div style={{display:'flex',alignItems:'flex-end',gap:'6px',height:'100px'}}>
+          {proStats.stampsByDay.map((d, i) => {
+            const max = Math.max(...proStats.stampsByDay.map(x => x.count), 1);
+            const height = Math.max((d.count / max) * 85, 4);
+            const today = new Date().getDay();
+            return (
+              <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'4px'}}>
+                <span style={{fontSize:'10px',color:'#d4af37',fontWeight:'600'}}>{d.count > 0 ? d.count : ''}</span>
+                <div style={{width:'100%',height:`${height}px`,background:i===today?'#d4af37':'rgba(212,175,55,0.3)',borderRadius:'4px',transition:'height 0.3s'}}/>
+                <span style={{fontSize:'9px',color:i===today?'#d4af37':'rgba(255,255,255,0.3)',fontWeight:i===today?'700':'400'}}>{d.day}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+        <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>🏆 Top clients</h3>
+        {proStats.topClients.length === 0 ? (
+          <p style={{color:'rgba(255,255,255,0.3)',fontSize:'13px'}}>Aucun client pour l'instant</p>
+        ) : (
+          <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+            {proStats.topClients.map((card, i) => (
+              <div key={card.id} style={{display:'flex',alignItems:'center',gap:'10px',padding:'8px',background:'rgba(255,255,255,0.03)',borderRadius:'8px'}}>
+                <span style={{fontSize:'14px',fontWeight:'700',color:i===0?'#d4af37':i===1?'#94a3b8':i===2?'#cd7c3a':'rgba(255,255,255,0.4)',width:'24px',flexShrink:0}}>#{i+1}</span>
+                <div style={{flex:1}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}}>
+                    <span style={{fontSize:'12px',color:'rgba(255,255,255,0.6)'}}>{card.stamps || 0} tampons</span>
+                    <span style={{fontSize:'11px',color:'rgba(255,255,255,0.3)'}}>{Math.round(((card.stamps||0)/(shop?.card_stamps_required||10))*100)}%</span>
+                  </div>
+                  <div style={{height:'4px',borderRadius:'2px',background:'rgba(255,255,255,0.08)',overflow:'hidden'}}>
+                    <div style={{height:'100%',borderRadius:'2px',background:'#d4af37',width:`${Math.min(((card.stamps||0)/(shop?.card_stamps_required||10))*100,100)}%`}}/>
+                  </div>
                 </div>
-              )}
-            </div>
-
-            {proStats.inactiveCount > 0 && (
-              <div style={{background:'rgba(239,68,68,0.06)',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)',gridColumn:isMobile?'1':'1/-1'}}>
-                <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 8px',color:'#fca5a5'}}>⚠️ Clients inactifs</h3>
-                <p style={{fontSize:'13px',color:'rgba(255,255,255,0.5)',margin:'0 0 12px'}}>{proStats.inactiveCount} client{proStats.inactiveCount > 1 ? 's' : ''} n'ont pas été tamponnés depuis 30 jours</p>
-                <a href="/notifications" style={{display:'inline-block',background:'rgba(239,68,68,0.15)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'8px 16px',fontSize:'13px',fontWeight:'600',textDecoration:'none'}}>
-                  🔔 Envoyer une offre de relance →
-                </a>
               </div>
-            )}
+            ))}
           </div>
         )}
+      </div>
+    </div>
+
+    {/* Stats Business uniquement */}
+    {shop?.plan === 'business' && (
+      <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr 1fr',gap:'16px'}}>
+        
+        {/* CA estimé */}
+        <div style={{background:'rgba(212,175,55,0.06)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+          <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 12px',color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.8px'}}>💰 CA estimé généré</h3>
+          <p style={{fontSize:'32px',fontWeight:'800',margin:'0 0 4px',color:'#d4af37'}}>{proStats.estimatedRevenue}€</p>
+          <p style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',margin:0}}>Basé sur {proStats.totalStamps} visites à 15€ moy.</p>
+        </div>
+
+        {/* Clients actifs vs inactifs */}
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+          <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 12px',color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.8px'}}>👥 Clients actifs / inactifs</h3>
+          <div style={{display:'flex',gap:'12px',alignItems:'center',marginBottom:'12px'}}>
+            <div style={{textAlign:'center'}}>
+              <p style={{fontSize:'24px',fontWeight:'800',margin:0,color:'#22c55e'}}>{proStats.activeClients}</p>
+              <p style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',margin:0}}>Actifs</p>
+            </div>
+            <div style={{flex:1,height:'8px',borderRadius:'4px',background:'rgba(255,255,255,0.08)',overflow:'hidden'}}>
+              <div style={{height:'100%',borderRadius:'4px',background:'linear-gradient(90deg,#22c55e,#ef4444)',width:'100%'}}/>
+            </div>
+            <div style={{textAlign:'center'}}>
+              <p style={{fontSize:'24px',fontWeight:'800',margin:0,color:'#ef4444'}}>{proStats.inactiveCount}</p>
+              <p style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',margin:0}}>Inactifs</p>
+            </div>
+          </div>
+          <p style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',margin:0}}>Taux de rétention : <span style={{color:'#a855f7',fontWeight:'700'}}>{proStats.retentionRate}%</span></p>
+        </div>
+
+        {/* Export CSV */}
+        <div style={{background:'rgba(59,130,246,0.06)',border:'1px solid rgba(59,130,246,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+          <div>
+            <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 8px',color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.8px'}}>📥 Export données</h3>
+            <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'0 0 16px'}}>Exportez vos clients et statistiques en CSV</p>
+          </div>
+          <button onClick={async () => {
+            const shopData = localStorage.getItem('shop');
+            const shopId = JSON.parse(shopData).id;
+            const res = await fetch(`${API}/customers/${shopId}`);
+            const data = await res.json();
+            const clients = data.data || [];
+            const csv = ['Nom,Email,Téléphone', ...clients.map(c => `${c.name},${c.email||''},${c.phone||''}`)].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'clients-fideleasy.csv';
+            a.click();
+          }} style={{background:'rgba(59,130,246,0.15)',color:'#93c5fd',border:'1px solid rgba(59,130,246,0.3)',borderRadius:'8px',padding:'10px',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>
+            ⬇️ Télécharger CSV
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* Alerte clients inactifs */}
+    {proStats.inactiveCount > 0 && (
+      <div style={{background:'rgba(239,68,68,0.06)',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+        <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 8px',color:'#fca5a5'}}>⚠️ {proStats.inactiveCount} client{proStats.inactiveCount > 1 ? 's' : ''} inactif{proStats.inactiveCount > 1 ? 's' : ''}</h3>
+        <p style={{fontSize:'13px',color:'rgba(255,255,255,0.5)',margin:'0 0 12px'}}>Ces clients n'ont pas été tamponnés depuis 30 jours — envoyez leur une offre !</p>
+        <a href="/notifications" style={{display:'inline-block',background:'rgba(239,68,68,0.15)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'8px 16px',fontSize:'13px',fontWeight:'600',textDecoration:'none'}}>
+          🔔 Envoyer une offre de relance →
+        </a>
+      </div>
+    )}
+  </div>
+)}
 
         {isMobile && (
           <a href="/clients" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'12px',padding:'14px',textDecoration:'none',fontSize:'15px',fontWeight:'700',boxShadow:'0 4px 20px rgba(212,175,55,0.3)',marginTop:'16px'}}>
