@@ -339,20 +339,26 @@ export default function Dashboard() {
       {/* Bottom nav mobile */}
       {isMobile && (
         <div style={{position:'fixed',bottom:0,left:0,right:0,background:'rgba(10,10,24,0.95)',borderTop:'1px solid rgba(255,255,255,0.08)',display:'flex',justifyContent:'space-around',padding:'8px 0 20px',zIndex:100,backdropFilter:'blur(20px)'}}>
-          {navItems.map(item => (
-            <a key={item.href} href={item.href} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'8px 16px',color:item.active?'#d4af37':'rgba(255,255,255,0.4)',transition:'color 0.2s'}}>
-              <span style={{fontSize:'22px'}}>{item.icon}</span>
-              <span style={{fontSize:'10px',fontWeight:item.active?'600':'400'}}>{item.label}</span>
-            </a>
-          ))}
-          <a href="/profile" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'8px 12px',color:'rgba(255,255,255,0.4)'}}>
-            <span style={{fontSize:'22px'}}>👤</span>
-            <span style={{fontSize:'10px'}}>Profil</span>
+          <a href="/dashboard" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'#d4af37'}}>
+            <span style={{fontSize:'20px'}}>📊</span>
+            <span style={{fontSize:'9px',fontWeight:'600'}}>Dashboard</span>
           </a>
-          <button onClick={logout} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',padding:'8px 16px',background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.4)'}}>
-            <span style={{fontSize:'22px'}}>🚪</span>
-            <span style={{fontSize:'10px'}}>Quitter</span>
-          </button>
+          <a href="/clients" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+            <span style={{fontSize:'20px'}}>👥</span>
+            <span style={{fontSize:'9px'}}>Clients</span>
+          </a>
+          <a href="/notifications" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+            <span style={{fontSize:'20px'}}>🔔</span>
+            <span style={{fontSize:'9px'}}>Notifs</span>
+          </a>
+          <a href="/settings" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+            <span style={{fontSize:'20px'}}>⚙️</span>
+            <span style={{fontSize:'9px'}}>Réglages</span>
+          </a>
+          <a href="/profile" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+            <span style={{fontSize:'20px'}}>👤</span>
+            <span style={{fontSize:'9px'}}>Profil</span>
+          </a>
         </div>
       )}
 
