@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
+import Sidebar from '../components/Sidebar';
 
 const API = 'https://fideleasy-backend-production.up.railway.app';
 
@@ -47,20 +48,6 @@ export default function Dashboard() {
     }
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem('shop');
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-  };
-
-  const navItems = [
-    { icon: '📊', label: 'Dashboard', href: '/dashboard', active: true },
-    { icon: '👥', label: 'Clients', href: '/clients' },
-    { icon: '🔔', label: 'Notifs', href: '/notifications' },
-    { icon: '📱', label: 'QR Code', href: '/qrcode' },
-    { icon: '⚙️', label: 'Réglages', href: '/settings' },
-  ];
-
   const statCards = [
     { icon: '👥', label: 'Clients', value: stats.clients, color: '#d4af37', bg: 'rgba(212,175,55,0.1)' },
     { icon: '💳', label: 'Cartes actives', value: stats.cards, color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
@@ -75,33 +62,7 @@ export default function Dashboard() {
         <div style={{position:'absolute',bottom:'10%',right:'5%',width:'300px',height:'300px',borderRadius:'50%',background:'rgba(212,175,55,0.03)',animation:'float2 10s ease-in-out infinite'}}/>
       </div>
 
-      {/* Sidebar PC */}
-      {!isMobile && (
-        <div style={{width:'240px',background:theme.sidebarBg,borderRight:`1px solid ${theme.sidebarBorder}`,padding:'24px 0',display:'flex',flexDirection:'column',position:'fixed',height:'100vh',zIndex:10,backdropFilter:'blur(20px)'}}>
-          <div style={{padding:'0 24px 32px'}}>
-            <h1 style={{fontSize:'22px',fontWeight:'800',margin:0,color:theme.color}}>Fidel<span style={{color:'#d4af37'}}>Easy</span></h1>
-            {shop && <p style={{fontSize:'12px',color:theme.textMuted,margin:'4px 0 0'}}>{shop.name}</p>}
-          </div>
-          {navItems.map(item => (
-            <a key={item.href} href={item.href} style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 24px',color:item.active?'#d4af37':theme.textMuted,background:item.active?'rgba(212,175,55,0.1)':'transparent',borderLeft:item.active?'3px solid #d4af37':'3px solid transparent',textDecoration:'none',fontSize:'14px',fontWeight:item.active?'600':'400',transition:'all 0.2s'}}>
-              <span style={{fontSize:'18px'}}>{item.icon}</span>{item.label}
-            </a>
-          ))}
-          <div style={{marginTop:'auto',padding:'24px',display:'flex',flexDirection:'column',gap:'12px'}}>
-            <div style={{background:'rgba(212,175,55,0.08)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'12px',padding:'16px'}}>
-              <p style={{fontSize:'12px',color:theme.textMuted,margin:'0 0 4px'}}>Plan actuel</p>
-              <p style={{fontSize:'14px',fontWeight:'600',color:'#d4af37',margin:'0 0 12px',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
-              <a href="/landing#pricing" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'8px',padding:'8px',fontSize:'12px',textDecoration:'none',fontWeight:'600'}}>Mettre à niveau</a>
-            </div>
-            <a href="/profile" style={{display:'flex',alignItems:'center',gap:'10px',background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'10px',padding:'10px 14px',textDecoration:'none',color:theme.textSecondary,fontSize:'13px',fontWeight:'500'}}>
-              <span>👤</span> Mon profil
-            </a>
-            <button onClick={logout} style={{background:'rgba(239,68,68,0.08)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'10px',padding:'10px',fontSize:'13px',fontWeight:'600',cursor:'pointer',width:'100%'}}>
-              🚪 Déconnexion
-            </button>
-          </div>
-        </div>
-      )}
+      <Sidebar activePage="/dashboard" />
 
       {/* Main */}
       <div style={{marginLeft:isMobile?0:'240px',flex:1,padding:isMobile?'20px 16px 100px':'32px',position:'relative',zIndex:1}}>
@@ -119,9 +80,6 @@ export default function Dashboard() {
           </div>
           {!isMobile && (
             <div style={{display:'flex',gap:'12px',alignItems:'center'}}>
-              <button onClick={theme.toggleTheme} style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,color:theme.color,borderRadius:'10px',padding:'10px 14px',cursor:'pointer',fontSize:'18px'}}>
-                {theme.darkMode ? '☀️' : '🌙'}
-              </button>
               <a href="/qrcode" style={{background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',color:'#d4af37',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>📱 Mon QR Code</a>
               <a href="/clients" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>+ Ajouter un client</a>
             </div>
@@ -340,36 +298,6 @@ export default function Dashboard() {
           </a>
         )}
       </div>
-
-      {/* Bottom nav mobile */}
-      {isMobile && (
-        <div style={{position:'fixed',bottom:0,left:0,right:0,background:theme.navBg,borderTop:`1px solid ${theme.navBorder}`,display:'flex',justifyContent:'space-around',padding:'8px 0 20px',zIndex:100,backdropFilter:'blur(20px)'}}>
-          <a href="/dashboard" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'#d4af37'}}>
-            <span style={{fontSize:'20px'}}>📊</span>
-            <span style={{fontSize:'9px',fontWeight:'600'}}>Dashboard</span>
-          </a>
-          <a href="/clients" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:theme.textMuted}}>
-            <span style={{fontSize:'20px'}}>👥</span>
-            <span style={{fontSize:'9px'}}>Clients</span>
-          </a>
-          <a href="/notifications" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:theme.textMuted}}>
-            <span style={{fontSize:'20px'}}>🔔</span>
-            <span style={{fontSize:'9px'}}>Notifs</span>
-          </a>
-          <a href="/settings" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:theme.textMuted}}>
-            <span style={{fontSize:'20px'}}>⚙️</span>
-            <span style={{fontSize:'9px'}}>Réglages</span>
-          </a>
-          <a href="/profile" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:theme.textMuted}}>
-            <span style={{fontSize:'20px'}}>👤</span>
-            <span style={{fontSize:'9px'}}>Profil</span>
-          </a>
-          <button onClick={theme.toggleTheme} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',padding:'6px 8px',background:'none',border:'none',cursor:'pointer',color:theme.textMuted}}>
-            <span style={{fontSize:'20px'}}>{theme.darkMode ? '☀️' : '🌙'}</span>
-            <span style={{fontSize:'9px'}}>Thème</span>
-          </button>
-        </div>
-      )}
 
       <style>{`
         @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
