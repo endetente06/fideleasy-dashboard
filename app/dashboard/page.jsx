@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 const API = 'https://fideleasy-backend-production.up.railway.app';
 
@@ -10,6 +11,7 @@ export default function Dashboard() {
   const [shop, setShop] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const theme = useTheme();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -67,7 +69,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div style={{display:'flex',minHeight:'100vh',background:'linear-gradient(135deg,#0a0a18 0%,#1a1020 50%,#0a1020 100%)',color:'white',fontFamily:'system-ui,-apple-system,sans-serif',position:'relative'}}>
+    <div style={{display:'flex',minHeight:'100vh',background:theme.bg,color:theme.color,fontFamily:'system-ui,-apple-system,sans-serif',position:'relative'}}>
       <div style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:0}}>
         <div style={{position:'absolute',top:'10%',left:'5%',width:'400px',height:'400px',borderRadius:'50%',background:'rgba(212,175,55,0.04)',animation:'float1 8s ease-in-out infinite'}}/>
         <div style={{position:'absolute',bottom:'10%',right:'5%',width:'300px',height:'300px',borderRadius:'50%',background:'rgba(212,175,55,0.03)',animation:'float2 10s ease-in-out infinite'}}/>
@@ -75,23 +77,23 @@ export default function Dashboard() {
 
       {/* Sidebar PC */}
       {!isMobile && (
-        <div style={{width:'240px',background:'rgba(255,255,255,0.04)',borderRight:'1px solid rgba(255,255,255,0.08)',padding:'24px 0',display:'flex',flexDirection:'column',position:'fixed',height:'100vh',zIndex:10,backdropFilter:'blur(20px)'}}>
+        <div style={{width:'240px',background:theme.sidebarBg,borderRight:`1px solid ${theme.sidebarBorder}`,padding:'24px 0',display:'flex',flexDirection:'column',position:'fixed',height:'100vh',zIndex:10,backdropFilter:'blur(20px)'}}>
           <div style={{padding:'0 24px 32px'}}>
-            <h1 style={{fontSize:'22px',fontWeight:'800',margin:0,color:'white'}}>Fidel<span style={{color:'#d4af37'}}>Easy</span></h1>
-            {shop && <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'4px 0 0'}}>{shop.name}</p>}
+            <h1 style={{fontSize:'22px',fontWeight:'800',margin:0,color:theme.color}}>Fidel<span style={{color:'#d4af37'}}>Easy</span></h1>
+            {shop && <p style={{fontSize:'12px',color:theme.textMuted,margin:'4px 0 0'}}>{shop.name}</p>}
           </div>
           {navItems.map(item => (
-            <a key={item.href} href={item.href} style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 24px',color:item.active?'#d4af37':'rgba(255,255,255,0.5)',background:item.active?'rgba(212,175,55,0.1)':'transparent',borderLeft:item.active?'3px solid #d4af37':'3px solid transparent',textDecoration:'none',fontSize:'14px',fontWeight:item.active?'600':'400',transition:'all 0.2s'}}>
+            <a key={item.href} href={item.href} style={{display:'flex',alignItems:'center',gap:'12px',padding:'12px 24px',color:item.active?'#d4af37':theme.textMuted,background:item.active?'rgba(212,175,55,0.1)':'transparent',borderLeft:item.active?'3px solid #d4af37':'3px solid transparent',textDecoration:'none',fontSize:'14px',fontWeight:item.active?'600':'400',transition:'all 0.2s'}}>
               <span style={{fontSize:'18px'}}>{item.icon}</span>{item.label}
             </a>
           ))}
           <div style={{marginTop:'auto',padding:'24px',display:'flex',flexDirection:'column',gap:'12px'}}>
             <div style={{background:'rgba(212,175,55,0.08)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'12px',padding:'16px'}}>
-              <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'0 0 4px'}}>Plan actuel</p>
+              <p style={{fontSize:'12px',color:theme.textMuted,margin:'0 0 4px'}}>Plan actuel</p>
               <p style={{fontSize:'14px',fontWeight:'600',color:'#d4af37',margin:'0 0 12px',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
               <a href="/landing#pricing" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'8px',padding:'8px',fontSize:'12px',textDecoration:'none',fontWeight:'600'}}>Mettre à niveau</a>
             </div>
-            <a href="/profile" style={{display:'flex',alignItems:'center',gap:'10px',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'10px',padding:'10px 14px',textDecoration:'none',color:'rgba(255,255,255,0.6)',fontSize:'13px',fontWeight:'500'}}>
+            <a href="/profile" style={{display:'flex',alignItems:'center',gap:'10px',background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'10px',padding:'10px 14px',textDecoration:'none',color:theme.textSecondary,fontSize:'13px',fontWeight:'500'}}>
               <span>👤</span> Mon profil
             </a>
             <button onClick={logout} style={{background:'rgba(239,68,68,0.08)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'10px',padding:'10px',fontSize:'13px',fontWeight:'600',cursor:'pointer',width:'100%'}}>
@@ -106,17 +108,20 @@ export default function Dashboard() {
         {isMobile && (
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px'}}>
             <h1 style={{fontSize:'20px',fontWeight:'800',margin:0}}>Fidel<span style={{color:'#d4af37'}}>Easy</span></h1>
-            {shop && <span style={{fontSize:'13px',color:'rgba(255,255,255,0.4)'}}>{shop.name}</span>}
+            {shop && <span style={{fontSize:'13px',color:theme.textMuted}}>{shop.name}</span>}
           </div>
         )}
 
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'28px',flexWrap:'wrap',gap:'12px'}}>
           <div>
             <h2 style={{fontSize:isMobile?'22px':'24px',fontWeight:'700',margin:'0 0 4px'}}>Tableau de bord</h2>
-            <p style={{color:'rgba(255,255,255,0.4)',margin:0,fontSize:'14px'}}>Bienvenue sur FidelEasy 👋</p>
+            <p style={{color:theme.textMuted,margin:0,fontSize:'14px'}}>Bienvenue sur FidelEasy 👋</p>
           </div>
           {!isMobile && (
-            <div style={{display:'flex',gap:'12px'}}>
+            <div style={{display:'flex',gap:'12px',alignItems:'center'}}>
+              <button onClick={theme.toggleTheme} style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,color:theme.color,borderRadius:'10px',padding:'10px 14px',cursor:'pointer',fontSize:'18px'}}>
+                {theme.darkMode ? '☀️' : '🌙'}
+              </button>
               <a href="/qrcode" style={{background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',color:'#d4af37',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>📱 Mon QR Code</a>
               <a href="/clients" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>+ Ajouter un client</a>
             </div>
@@ -125,9 +130,9 @@ export default function Dashboard() {
 
         <div style={{display:'grid',gridTemplateColumns:isMobile?'repeat(2,1fr)':'repeat(4,1fr)',gap:'12px',marginBottom:'24px'}}>
           {statCards.map(card => (
-            <div key={card.label} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:isMobile?'16px':'20px',backdropFilter:'blur(10px)'}}>
+            <div key={card.label} style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:isMobile?'16px':'20px',backdropFilter:'blur(10px)'}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px'}}>
-                <span style={{fontSize:'10px',color:'rgba(255,255,255,0.4)',textTransform:'uppercase',letterSpacing:'0.8px'}}>{card.label}</span>
+                <span style={{fontSize:'10px',color:theme.textMuted,textTransform:'uppercase',letterSpacing:'0.8px'}}>{card.label}</span>
                 <div style={{width:'32px',height:'32px',borderRadius:'8px',background:card.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px'}}>{card.icon}</div>
               </div>
               <p style={{fontSize:isMobile?'24px':'28px',fontWeight:'700',margin:0,color:card.color}}>{loading ? '...' : card.value}</p>
@@ -136,27 +141,27 @@ export default function Dashboard() {
         </div>
 
         <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+          <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
-              <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:'rgba(255,255,255,0.8)'}}>👥 Derniers clients</h3>
+              <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:theme.textSecondary}}>👥 Derniers clients</h3>
               <a href="/clients" style={{fontSize:'12px',color:'#d4af37',textDecoration:'none',fontWeight:'600'}}>Voir tous →</a>
             </div>
             {loading ? (
-              <p style={{color:'rgba(255,255,255,0.3)',fontSize:'14px'}}>Chargement...</p>
+              <p style={{color:theme.textMuted,fontSize:'14px'}}>Chargement...</p>
             ) : recentClients.length === 0 ? (
-              <p style={{color:'rgba(255,255,255,0.3)',fontSize:'14px'}}>Aucun client pour l'instant</p>
+              <p style={{color:theme.textMuted,fontSize:'14px'}}>Aucun client pour l'instant</p>
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
                 {recentClients.map(client => (
-                  <div key={client.id} style={{display:'flex',alignItems:'center',gap:'12px',padding:'10px',background:'rgba(255,255,255,0.03)',borderRadius:'10px'}}>
+                  <div key={client.id} style={{display:'flex',alignItems:'center',gap:'12px',padding:'10px',background:theme.cardBg,borderRadius:'10px'}}>
                     <div style={{width:'34px',height:'34px',borderRadius:'50%',background:'rgba(212,175,55,0.2)',display:'flex',alignItems:'center',justifyContent:'center',color:'#d4af37',fontWeight:'700',fontSize:'14px',flexShrink:0}}>
                       {client.name?.charAt(0).toUpperCase()}
                     </div>
                     <div style={{flex:1,minWidth:0}}>
                       <p style={{margin:0,fontWeight:'600',fontSize:'13px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{client.name}</p>
-                      <p style={{margin:0,fontSize:'11px',color:'rgba(255,255,255,0.4)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{client.email || client.phone || '—'}</p>
+                      <p style={{margin:0,fontSize:'11px',color:theme.textMuted,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{client.email || client.phone || '—'}</p>
                     </div>
-                    <span style={{fontSize:'11px',color:'rgba(255,255,255,0.3)',flexShrink:0}}>Nouveau</span>
+                    <span style={{fontSize:'11px',color:theme.textMuted,flexShrink:0}}>Nouveau</span>
                   </div>
                 ))}
               </div>
@@ -164,8 +169,8 @@ export default function Dashboard() {
           </div>
 
           <div style={{display:'flex',flexDirection:'column',gap:'16px'}}>
-            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-              <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 14px',color:'rgba(255,255,255,0.8)'}}>⚡ Actions rapides</h3>
+            <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+              <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 14px',color:theme.textSecondary}}>⚡ Actions rapides</h3>
               <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
                 {[
                   { icon:'👥', label:'Gérer mes clients', href:'/clients', color:'#d4af37' },
@@ -173,17 +178,17 @@ export default function Dashboard() {
                   { icon:'🔔', label:'Envoyer une notification', href:'/notifications', color:'#a855f7' },
                   { icon:'📱', label:'Afficher mon QR Code', href:'/qrcode', color:'#3b82f6' },
                 ].map(action => (
-                  <a key={action.label} href={action.href} style={{display:'flex',alignItems:'center',gap:'10px',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'10px',padding:'12px',textDecoration:'none',color:'white'}}>
+                  <a key={action.label} href={action.href} style={{display:'flex',alignItems:'center',gap:'10px',background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'10px',padding:'12px',textDecoration:'none',color:theme.color}}>
                     <div style={{width:'32px',height:'32px',borderRadius:'8px',background:`${action.color}20`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}}>{action.icon}</div>
                     <span style={{fontSize:'13px',fontWeight:'500'}}>{action.label}</span>
-                    <span style={{marginLeft:'auto',color:'rgba(255,255,255,0.3)',fontSize:'12px'}}>→</span>
+                    <span style={{marginLeft:'auto',color:theme.textMuted,fontSize:'12px'}}>→</span>
                   </a>
                 ))}
               </div>
             </div>
             <div style={{background:'rgba(212,175,55,0.06)',border:'1px solid rgba(212,175,55,0.15)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
-                <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:'rgba(255,255,255,0.8)'}}>⭐ Mon plan</h3>
+                <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:theme.textSecondary}}>⭐ Mon plan</h3>
                 <span style={{background:'rgba(212,175,55,0.2)',color:'#d4af37',borderRadius:'20px',padding:'4px 12px',fontSize:'12px',fontWeight:'700',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</span>
               </div>
               <div style={{display:'flex',flexDirection:'column',gap:'6px',marginBottom:'14px'}}>
@@ -193,7 +198,7 @@ export default function Dashboard() {
                   '✓ Notifications push',
                   shop?.plan === 'pro' || shop?.plan === 'business' ? '✓ Carte personnalisée' : '✗ Carte personnalisée (Pro)',
                 ].map((f,i) => (
-                  <p key={i} style={{margin:0,fontSize:'12px',color:f.startsWith('✗')?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.6)'}}>{f}</p>
+                  <p key={i} style={{margin:0,fontSize:'12px',color:f.startsWith('✗')?theme.textMuted:theme.textSecondary}}>{f}</p>
                 ))}
               </div>
               {shop?.plan === 'starter' && (
@@ -212,9 +217,9 @@ export default function Dashboard() {
                 { icon:'🏆', label:'Cartes complétées', value: proStats.completedCards, color:'#d4af37', bg:'rgba(212,175,55,0.1)', suffix:'' },
                 { icon:'📅', label:'Tampons ce mois', value: proStats.monthStamps, color:'#3b82f6', bg:'rgba(59,130,246,0.1)', suffix:'' },
               ].map(card => (
-                <div key={card.label} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:isMobile?'14px':'18px',backdropFilter:'blur(10px)'}}>
+                <div key={card.label} style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:isMobile?'14px':'18px',backdropFilter:'blur(10px)'}}>
                   <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'8px'}}>
-                    <span style={{fontSize:'10px',color:'rgba(255,255,255,0.4)',textTransform:'uppercase',letterSpacing:'0.8px'}}>{card.label}</span>
+                    <span style={{fontSize:'10px',color:theme.textMuted,textTransform:'uppercase',letterSpacing:'0.8px'}}>{card.label}</span>
                     <div style={{width:'28px',height:'28px',borderRadius:'8px',background:card.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px'}}>{card.icon}</div>
                   </div>
                   <p style={{fontSize:isMobile?'22px':'26px',fontWeight:'700',margin:0,color:card.color}}>{card.value}{card.suffix}</p>
@@ -223,9 +228,9 @@ export default function Dashboard() {
             </div>
 
             <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'16px'}}>
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+              <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
-                  <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:'rgba(255,255,255,0.8)'}}>📈 Tampons cette semaine</h3>
+                  <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:theme.textSecondary}}>📈 Tampons cette semaine</h3>
                   <span style={{fontSize:'12px',color:proStats.weekGrowth>=0?'#22c55e':'#ef4444',fontWeight:'600'}}>{proStats.weekGrowth>=0?'+':''}{proStats.weekGrowth}% vs semaine dernière</span>
                 </div>
                 <div style={{display:'flex',alignItems:'flex-end',gap:'6px',height:'100px'}}>
@@ -237,27 +242,27 @@ export default function Dashboard() {
                       <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'4px'}}>
                         <span style={{fontSize:'10px',color:'#d4af37',fontWeight:'600'}}>{d.count > 0 ? d.count : ''}</span>
                         <div style={{width:'100%',height:`${height}px`,background:i===today?'#d4af37':'rgba(212,175,55,0.3)',borderRadius:'4px'}}/>
-                        <span style={{fontSize:'9px',color:i===today?'#d4af37':'rgba(255,255,255,0.3)',fontWeight:i===today?'700':'400'}}>{d.day}</span>
+                        <span style={{fontSize:'9px',color:i===today?'#d4af37':theme.textMuted,fontWeight:i===today?'700':'400'}}>{d.day}</span>
                       </div>
                     );
                   })}
                 </div>
               </div>
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-                <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>🏆 Top clients</h3>
+              <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+                <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:theme.textSecondary}}>🏆 Top clients</h3>
                 {proStats.topClients.length === 0 ? (
-                  <p style={{color:'rgba(255,255,255,0.3)',fontSize:'13px'}}>Aucun client pour l'instant</p>
+                  <p style={{color:theme.textMuted,fontSize:'13px'}}>Aucun client pour l'instant</p>
                 ) : (
                   <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
                     {proStats.topClients.map((card, i) => (
-                      <div key={card.id} style={{display:'flex',alignItems:'center',gap:'10px',padding:'8px',background:'rgba(255,255,255,0.03)',borderRadius:'8px'}}>
-                        <span style={{fontSize:'14px',fontWeight:'700',color:i===0?'#d4af37':i===1?'#94a3b8':i===2?'#cd7c3a':'rgba(255,255,255,0.4)',width:'24px',flexShrink:0}}>#{i+1}</span>
+                      <div key={card.id} style={{display:'flex',alignItems:'center',gap:'10px',padding:'8px',background:theme.cardBg,borderRadius:'8px'}}>
+                        <span style={{fontSize:'14px',fontWeight:'700',color:i===0?'#d4af37':i===1?'#94a3b8':i===2?'#cd7c3a':theme.textMuted,width:'24px',flexShrink:0}}>#{i+1}</span>
                         <div style={{flex:1}}>
                           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}}>
-                            <span style={{fontSize:'12px',color:'rgba(255,255,255,0.6)'}}>{card.stamps || 0} tampons</span>
-                            <span style={{fontSize:'11px',color:'rgba(255,255,255,0.3)'}}>{Math.round(((card.stamps||0)/(shop?.card_stamps_required||10))*100)}%</span>
+                            <span style={{fontSize:'12px',color:theme.textSecondary}}>{card.stamps || 0} tampons</span>
+                            <span style={{fontSize:'11px',color:theme.textMuted}}>{Math.round(((card.stamps||0)/(shop?.card_stamps_required||10))*100)}%</span>
                           </div>
-                          <div style={{height:'4px',borderRadius:'2px',background:'rgba(255,255,255,0.08)',overflow:'hidden'}}>
+                          <div style={{height:'4px',borderRadius:'2px',background:theme.cardBorder,overflow:'hidden'}}>
                             <div style={{height:'100%',borderRadius:'2px',background:'#d4af37',width:`${Math.min(((card.stamps||0)/(shop?.card_stamps_required||10))*100,100)}%`}}/>
                           </div>
                         </div>
@@ -271,31 +276,31 @@ export default function Dashboard() {
             {shop?.plan === 'business' && (
               <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr 1fr',gap:'16px'}}>
                 <div style={{background:'rgba(212,175,55,0.06)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-                  <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 12px',color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.8px'}}>💰 CA estimé généré</h3>
+                  <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 12px',color:theme.textSecondary,textTransform:'uppercase',letterSpacing:'0.8px'}}>💰 CA estimé généré</h3>
                   <p style={{fontSize:'32px',fontWeight:'800',margin:'0 0 4px',color:'#d4af37'}}>{proStats.estimatedRevenue}€</p>
-                  <p style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',margin:0}}>Basé sur {proStats.totalStamps} visites à 15€ moy.</p>
+                  <p style={{fontSize:'12px',color:theme.textMuted,margin:0}}>Basé sur {proStats.totalStamps} visites à 15€ moy.</p>
                 </div>
-                <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-                  <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 12px',color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.8px'}}>👥 Clients actifs / inactifs</h3>
+                <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
+                  <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 12px',color:theme.textSecondary,textTransform:'uppercase',letterSpacing:'0.8px'}}>👥 Clients actifs / inactifs</h3>
                   <div style={{display:'flex',gap:'12px',alignItems:'center',marginBottom:'12px'}}>
                     <div style={{textAlign:'center'}}>
                       <p style={{fontSize:'24px',fontWeight:'800',margin:0,color:'#22c55e'}}>{proStats.activeClients}</p>
-                      <p style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',margin:0}}>Actifs</p>
+                      <p style={{fontSize:'11px',color:theme.textMuted,margin:0}}>Actifs</p>
                     </div>
-                    <div style={{flex:1,height:'8px',borderRadius:'4px',background:'rgba(255,255,255,0.08)',overflow:'hidden'}}>
+                    <div style={{flex:1,height:'8px',borderRadius:'4px',background:theme.cardBorder,overflow:'hidden'}}>
                       <div style={{height:'100%',borderRadius:'4px',background:'linear-gradient(90deg,#22c55e,#ef4444)',width:'100%'}}/>
                     </div>
                     <div style={{textAlign:'center'}}>
                       <p style={{fontSize:'24px',fontWeight:'800',margin:0,color:'#ef4444'}}>{proStats.inactiveCount}</p>
-                      <p style={{fontSize:'11px',color:'rgba(255,255,255,0.4)',margin:0}}>Inactifs</p>
+                      <p style={{fontSize:'11px',color:theme.textMuted,margin:0}}>Inactifs</p>
                     </div>
                   </div>
-                  <p style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',margin:0}}>Taux de rétention : <span style={{color:'#a855f7',fontWeight:'700'}}>{proStats.retentionRate}%</span></p>
+                  <p style={{fontSize:'12px',color:theme.textMuted,margin:0}}>Taux de rétention : <span style={{color:'#a855f7',fontWeight:'700'}}>{proStats.retentionRate}%</span></p>
                 </div>
                 <div style={{background:'rgba(59,130,246,0.06)',border:'1px solid rgba(59,130,246,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
                   <div>
-                    <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 8px',color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.8px'}}>📥 Export données</h3>
-                    <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'0 0 16px'}}>Exportez vos clients et statistiques en CSV</p>
+                    <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 8px',color:theme.textSecondary,textTransform:'uppercase',letterSpacing:'0.8px'}}>📥 Export données</h3>
+                    <p style={{fontSize:'12px',color:theme.textMuted,margin:'0 0 16px'}}>Exportez vos clients et statistiques en CSV</p>
                   </div>
                   <button onClick={async () => {
                     const shopData = localStorage.getItem('shop');
@@ -320,7 +325,7 @@ export default function Dashboard() {
             {proStats.inactiveCount > 0 && (
               <div style={{background:'rgba(239,68,68,0.06)',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
                 <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 8px',color:'#fca5a5'}}>⚠️ {proStats.inactiveCount} client{proStats.inactiveCount > 1 ? 's' : ''} inactif{proStats.inactiveCount > 1 ? 's' : ''}</h3>
-                <p style={{fontSize:'13px',color:'rgba(255,255,255,0.5)',margin:'0 0 12px'}}>Ces clients n'ont pas été tamponnés depuis 30 jours — envoyez leur une offre !</p>
+                <p style={{fontSize:'13px',color:theme.textSecondary,margin:'0 0 12px'}}>Ces clients n'ont pas été tamponnés depuis 30 jours — envoyez leur une offre !</p>
                 <a href="/notifications" style={{display:'inline-block',background:'rgba(239,68,68,0.15)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'8px 16px',fontSize:'13px',fontWeight:'600',textDecoration:'none'}}>
                   🔔 Envoyer une offre de relance →
                 </a>
@@ -338,27 +343,31 @@ export default function Dashboard() {
 
       {/* Bottom nav mobile */}
       {isMobile && (
-        <div style={{position:'fixed',bottom:0,left:0,right:0,background:'rgba(10,10,24,0.95)',borderTop:'1px solid rgba(255,255,255,0.08)',display:'flex',justifyContent:'space-around',padding:'8px 0 20px',zIndex:100,backdropFilter:'blur(20px)'}}>
+        <div style={{position:'fixed',bottom:0,left:0,right:0,background:theme.navBg,borderTop:`1px solid ${theme.navBorder}`,display:'flex',justifyContent:'space-around',padding:'8px 0 20px',zIndex:100,backdropFilter:'blur(20px)'}}>
           <a href="/dashboard" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'#d4af37'}}>
             <span style={{fontSize:'20px'}}>📊</span>
             <span style={{fontSize:'9px',fontWeight:'600'}}>Dashboard</span>
           </a>
-          <a href="/clients" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+          <a href="/clients" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:theme.textMuted}}>
             <span style={{fontSize:'20px'}}>👥</span>
             <span style={{fontSize:'9px'}}>Clients</span>
           </a>
-          <a href="/notifications" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+          <a href="/notifications" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:theme.textMuted}}>
             <span style={{fontSize:'20px'}}>🔔</span>
             <span style={{fontSize:'9px'}}>Notifs</span>
           </a>
-          <a href="/settings" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+          <a href="/settings" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:theme.textMuted}}>
             <span style={{fontSize:'20px'}}>⚙️</span>
             <span style={{fontSize:'9px'}}>Réglages</span>
           </a>
-          <a href="/profile" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+          <a href="/profile" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:theme.textMuted}}>
             <span style={{fontSize:'20px'}}>👤</span>
             <span style={{fontSize:'9px'}}>Profil</span>
           </a>
+          <button onClick={theme.toggleTheme} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',padding:'6px 8px',background:'none',border:'none',cursor:'pointer',color:theme.textMuted}}>
+            <span style={{fontSize:'20px'}}>{theme.darkMode ? '☀️' : '🌙'}</span>
+            <span style={{fontSize:'9px'}}>Thème</span>
+          </button>
         </div>
       )}
 
