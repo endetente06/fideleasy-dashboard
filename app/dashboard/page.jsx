@@ -91,6 +91,9 @@ export default function Dashboard() {
               <p style={{fontSize:'14px',fontWeight:'600',color:'#d4af37',margin:'0 0 12px',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
               <a href="/landing#pricing" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'8px',padding:'8px',fontSize:'12px',textDecoration:'none',fontWeight:'600'}}>Mettre à niveau</a>
             </div>
+            <a href="/profile" style={{display:'flex',alignItems:'center',gap:'10px',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'10px',padding:'10px 14px',textDecoration:'none',color:'rgba(255,255,255,0.6)',fontSize:'13px',fontWeight:'500'}}>
+              <span>👤</span> Mon profil
+            </a>
             <button onClick={logout} style={{background:'rgba(239,68,68,0.08)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'10px',padding:'10px',fontSize:'13px',fontWeight:'600',cursor:'pointer',width:'100%'}}>
               🚪 Déconnexion
             </button>
@@ -342,6 +345,10 @@ export default function Dashboard() {
               <span style={{fontSize:'10px',fontWeight:item.active?'600':'400'}}>{item.label}</span>
             </a>
           ))}
+          <a href="/profile" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'8px 12px',color:'rgba(255,255,255,0.4)'}}>
+            <span style={{fontSize:'22px'}}>👤</span>
+            <span style={{fontSize:'10px'}}>Profil</span>
+          </a>
           <button onClick={logout} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',padding:'8px 16px',background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.4)'}}>
             <span style={{fontSize:'22px'}}>🚪</span>
             <span style={{fontSize:'10px'}}>Quitter</span>
