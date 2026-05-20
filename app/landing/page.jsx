@@ -40,7 +40,7 @@ export default function Landing() {
       monthlyPrice: 79,
       yearlyPrice: 66,
       features: ['Clients illimités', 'Commerces illimités', 'Apple & Google Wallet', 'QR Code', 'Notifications push', 'Carte personnalisée avec photo', 'Support prioritaire 24/7', 'API access'],
-      cta: 'Contacter les ventes',
+      cta: 'Commencer gratuitement',
       popular: false,
     },
   ];
