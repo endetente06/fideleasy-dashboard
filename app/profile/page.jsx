@@ -8,6 +8,7 @@ export default function Profile() {
   const [isMobile, setIsMobile] = useState(false);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
 
   useEffect(() => {
@@ -19,10 +20,14 @@ export default function Profile() {
 
   useEffect(() => {
     const shopData = localStorage.getItem('shop');
-    if (!shopData) { window.location.href = '/login'; return; }
+    if (!shopData) {
+      setLoading(false);
+      return;
+    }
     const s = JSON.parse(shopData);
     setShop(s);
     setForm(f => ({ ...f, name: s.name || '', email: s.email || '' }));
+    setLoading(false);
   }, []);
 
   const logout = () => {
@@ -68,7 +73,6 @@ export default function Profile() {
       return;
     }
     setSaving(true);
-    // Mise à jour via Supabase Auth
     setSuccess('✅ Mot de passe mis à jour !');
     setTimeout(() => setSuccess(''), 3000);
     setSaving(false);
@@ -78,7 +82,6 @@ export default function Profile() {
     { icon: '📊', label: 'Dashboard', href: '/dashboard' },
     { icon: '👥', label: 'Clients', href: '/clients' },
     { icon: '🔔', label: 'Notifs', href: '/notifications' },
-    { icon: '📱', label: 'QR Code', href: '/qrcode' },
     { icon: '⚙️', label: 'Réglages', href: '/settings' },
   ];
 
@@ -90,9 +93,22 @@ export default function Profile() {
     boxSizing:'border-box', outline:'none'
   };
 
+  if (loading) return (
+    <div style={{minHeight:'100vh',background:'linear-gradient(135deg,#0a0a18 0%,#1a1020 50%,#0a1020 100%)',display:'flex',alignItems:'center',justifyContent:'center',color:'white'}}>
+      <p>Chargement...</p>
+    </div>
+  );
+
+  if (!shop) return (
+    <div style={{minHeight:'100vh',background:'linear-gradient(135deg,#0a0a18 0%,#1a1020 50%,#0a1020 100%)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',flexDirection:'column',gap:'16px'}}>
+      <p>Vous devez être connecté pour accéder à cette page.</p>
+      <a href="/login" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 24px',textDecoration:'none',fontWeight:'600'}}>Se connecter</a>
+    </div>
+  );
+
   return (
     <div style={{display:'flex',minHeight:'100vh',background:'linear-gradient(135deg,#0a0a18 0%,#1a1020 50%,#0a1020 100%)',color:'white',fontFamily:'system-ui,-apple-system,sans-serif'}}>
-      
+
       {/* Sidebar PC */}
       {!isMobile && (
         <div style={{width:'240px',background:'rgba(255,255,255,0.04)',borderRight:'1px solid rgba(255,255,255,0.08)',padding:'24px 0',display:'flex',flexDirection:'column',position:'fixed',height:'100vh',zIndex:10,backdropFilter:'blur(20px)'}}>
@@ -132,74 +148,38 @@ export default function Profile() {
 
         {success && (
           <div style={{background:success.includes('❌')?'rgba(239,68,68,0.1)':'rgba(34,197,94,0.1)',border:`1px solid ${success.includes('❌')?'rgba(239,68,68,0.3)':'rgba(34,197,94,0.3)'}`,borderRadius:'12px',padding:'14px 18px',marginBottom:'20px',fontSize:'14px',color:success.includes('❌')?'#fca5a5':'#86efac'}}>
-            {success.includes('❌') ? success : `✅ ${success}`}
+            {success}
           </div>
         )}
 
         <div style={{display:'flex',flexDirection:'column',gap:'20px',maxWidth:'600px'}}>
-
-          {/* Nom du commerce */}
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'24px',backdropFilter:'blur(10px)'}}>
             <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>🏪 Nom du commerce</h3>
-            <input
-              value={form.name}
-              onChange={e => setForm({...form, name: e.target.value})}
-              style={inputStyle}
-              placeholder="Nom de votre commerce"
-              onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'}
-              onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}
-            />
+            <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} style={inputStyle} placeholder="Nom de votre commerce" onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
             <button onClick={saveName} disabled={saving} style={{marginTop:'12px',background:'#d4af37',color:'white',border:'none',borderRadius:'10px',padding:'10px 24px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
               {saving ? 'Sauvegarde...' : 'Enregistrer'}
             </button>
           </div>
 
-          {/* Email */}
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'24px',backdropFilter:'blur(10px)'}}>
             <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>📧 Adresse email</h3>
-            <input
-              type="email"
-              value={form.email}
-              onChange={e => setForm({...form, email: e.target.value})}
-              style={inputStyle}
-              placeholder="votre@email.fr"
-              onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'}
-              onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}
-            />
+            <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} style={inputStyle} placeholder="votre@email.fr" onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
             <button onClick={saveEmail} disabled={saving} style={{marginTop:'12px',background:'#d4af37',color:'white',border:'none',borderRadius:'10px',padding:'10px 24px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
               {saving ? 'Sauvegarde...' : 'Enregistrer'}
             </button>
           </div>
 
-          {/* Mot de passe */}
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'24px',backdropFilter:'blur(10px)'}}>
             <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:'rgba(255,255,255,0.8)'}}>🔒 Mot de passe</h3>
             <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-              <input
-                type="password"
-                value={form.password}
-                onChange={e => setForm({...form, password: e.target.value})}
-                style={inputStyle}
-                placeholder="Nouveau mot de passe"
-                onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'}
-                onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}
-              />
-              <input
-                type="password"
-                value={form.confirmPassword}
-                onChange={e => setForm({...form, confirmPassword: e.target.value})}
-                style={inputStyle}
-                placeholder="Confirmer le mot de passe"
-                onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'}
-                onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}
-              />
+              <input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} style={inputStyle} placeholder="Nouveau mot de passe" onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
+              <input type="password" value={form.confirmPassword} onChange={e => setForm({...form, confirmPassword: e.target.value})} style={inputStyle} placeholder="Confirmer le mot de passe" onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
             </div>
             <button onClick={savePassword} disabled={saving} style={{marginTop:'12px',background:'#d4af37',color:'white',border:'none',borderRadius:'10px',padding:'10px 24px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
               {saving ? 'Sauvegarde...' : 'Changer le mot de passe'}
             </button>
           </div>
 
-          {/* Info plan */}
           <div style={{background:'rgba(212,175,55,0.06)',border:'1px solid rgba(212,175,55,0.15)',borderRadius:'16px',padding:'24px',backdropFilter:'blur(10px)'}}>
             <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 12px',color:'rgba(255,255,255,0.8)'}}>⭐ Mon abonnement</h3>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
@@ -207,9 +187,7 @@ export default function Profile() {
                 <p style={{margin:0,fontSize:'14px',color:'rgba(255,255,255,0.6)'}}>Plan actuel</p>
                 <p style={{margin:'4px 0 0',fontSize:'20px',fontWeight:'700',color:'#d4af37',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
               </div>
-              <a href="/landing#pricing" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>
-                Changer de plan
-              </a>
+              <a href="/landing#pricing" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>Changer de plan</a>
             </div>
           </div>
         </div>
@@ -219,20 +197,23 @@ export default function Profile() {
       {isMobile && (
         <div style={{position:'fixed',bottom:0,left:0,right:0,background:'rgba(10,10,24,0.95)',borderTop:'1px solid rgba(255,255,255,0.08)',display:'flex',justifyContent:'space-around',padding:'8px 0 20px',zIndex:100,backdropFilter:'blur(20px)'}}>
           {navItems.map(item => (
-            <a key={item.href} href={item.href} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'8px 16px',color:'rgba(255,255,255,0.4)'}}>
-              <span style={{fontSize:'22px'}}>{item.icon}</span>
-              <span style={{fontSize:'10px'}}>{item.label}</span>
+            <a key={item.href} href={item.href} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'rgba(255,255,255,0.4)'}}>
+              <span style={{fontSize:'20px'}}>{item.icon}</span>
+              <span style={{fontSize:'9px'}}>{item.label}</span>
             </a>
           ))}
-          <button onClick={logout} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',padding:'8px 16px',background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.4)'}}>
-            <span style={{fontSize:'22px'}}>🚪</span>
-            <span style={{fontSize:'10px'}}>Quitter</span>
+          <a href="/profile" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'6px 8px',color:'#d4af37'}}>
+            <span style={{fontSize:'20px'}}>👤</span>
+            <span style={{fontSize:'9px',fontWeight:'600'}}>Profil</span>
+          </a>
+          <button onClick={logout} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',padding:'6px 8px',background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.4)'}}>
+            <span style={{fontSize:'20px'}}>🚪</span>
+            <span style={{fontSize:'9px'}}>Quitter</span>
           </button>
         </div>
       )}
 
       <style>{`
-        @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
         input::placeholder { color: rgba(255,255,255,0.25); }
         * { box-sizing: border-box; }
       `}</style>
