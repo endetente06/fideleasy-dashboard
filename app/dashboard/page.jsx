@@ -64,6 +64,13 @@ export default function Dashboard() {
     { icon: '🔔', label: 'Notifications', value: stats.notifications, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
   ];
 
+  const logout = () => {
+    localStorage.removeItem('shop');
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  };
+
+
   return (
     <div style={{display:'flex',minHeight:'100vh',background:'linear-gradient(135deg,#0a0a18 0%,#1a1020 50%,#0a1020 100%)',color:'white',fontFamily:'system-ui,-apple-system,sans-serif',position:'relative'}}>
       <div style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:0}}>
@@ -82,14 +89,16 @@ export default function Dashboard() {
               <span style={{fontSize:'18px'}}>{item.icon}</span>{item.label}
             </a>
           ))}
-          <div style={{marginTop:'auto',padding:'24px'}}>
-            <div style={{background:'rgba(212,175,55,0.08)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'12px',padding:'16px'}}>
-              <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'0 0 4px'}}>Plan actuel</p>
-              <p style={{fontSize:'14px',fontWeight:'600',color:'#d4af37',margin:'0 0 12px',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
-              <a href="/landing#pricing" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'8px',padding:'8px',fontSize:'12px',textDecoration:'none',fontWeight:'600'}}>Mettre à niveau</a>
-            </div>
-          </div>
-        </div>
+         <div style={{marginTop:'auto',padding:'24px',display:'flex',flexDirection:'column',gap:'12px'}}>
+  <div style={{background:'rgba(212,175,55,0.08)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'12px',padding:'16px'}}>
+    <p style={{fontSize:'12px',color:'rgba(255,255,255,0.4)',margin:'0 0 4px'}}>Plan actuel</p>
+    <p style={{fontSize:'14px',fontWeight:'600',color:'#d4af37',margin:'0 0 12px',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
+    <a href="/landing#pricing" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'8px',padding:'8px',fontSize:'12px',textDecoration:'none',fontWeight:'600'}}>Mettre à niveau</a>
+  </div>
+  <button onClick={logout} style={{background:'rgba(239,68,68,0.08)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'10px',padding:'10px',fontSize:'13px',fontWeight:'600',cursor:'pointer',width:'100%'}}>
+    🚪 Déconnexion
+  </button>
+</div> 
       )}
 
       <div style={{marginLeft:isMobile?0:'240px',flex:1,padding:isMobile?'20px 16px 100px':'32px',position:'relative',zIndex:1}}>
@@ -350,22 +359,17 @@ export default function Dashboard() {
         )}
       </div>
 
-      {isMobile && (
-        <div style={{position:'fixed',bottom:0,left:0,right:0,background:'rgba(10,10,24,0.95)',borderTop:'1px solid rgba(255,255,255,0.08)',display:'flex',justifyContent:'space-around',padding:'8px 0 20px',zIndex:100,backdropFilter:'blur(20px)'}}>
-          {navItems.map(item => (
-            <a key={item.href} href={item.href} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'8px 16px',color:item.active?'#d4af37':'rgba(255,255,255,0.4)',transition:'color 0.2s'}}>
-              <span style={{fontSize:'22px'}}>{item.icon}</span>
-              <span style={{fontSize:'10px',fontWeight:item.active?'600':'400'}}>{item.label}</span>
-            </a>
-          ))}
-        </div>
-      )}
-
-      <style>{`
-        @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
-        @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(20px)} }
-        * { box-sizing: border-box; }
-      `}</style>
-    </div>
-  );
-}
+{isMobile && (
+  <div style={{position:'fixed',bottom:0,left:0,right:0,background:'rgba(10,10,24,0.95)',borderTop:'1px solid rgba(255,255,255,0.08)',display:'flex',justifyContent:'space-around',padding:'8px 0 20px',zIndex:100,backdropFilter:'blur(20px)'}}>
+    {navItems.map(item => (
+      <a key={item.href} href={item.href} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',textDecoration:'none',padding:'8px 16px',color:item.active?'#d4af37':'rgba(255,255,255,0.4)',transition:'color 0.2s'}}>
+        <span style={{fontSize:'22px'}}>{item.icon}</span>
+        <span style={{fontSize:'10px',fontWeight:item.active?'600':'400'}}>{item.label}</span>
+      </a>
+    ))}
+    <button onClick={logout} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'4px',padding:'8px 16px',background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.4)'}}>
+      <span style={{fontSize:'22px'}}>🚪</span>
+      <span style={{fontSize:'10px'}}>Quitter</span>
+    </button>
+  </div>
+)}
