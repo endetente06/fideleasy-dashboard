@@ -24,7 +24,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const shopData = localStorage.getItem('shop');
-    if (!shopData) return;
+    if (!shopData) { setLoading(false); return; }
     const s = JSON.parse(shopData);
     setShop(s);
     const shopId = s.id;
