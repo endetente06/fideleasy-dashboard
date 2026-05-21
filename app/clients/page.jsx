@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import Sidebar from '../components/Sidebar';
+import Confetti from '../components/Confetti';
 
 const API = 'https://fideleasy-backend-production.up.railway.app';
 
@@ -14,8 +15,9 @@ export default function Clients() {
   const [isMobile, setIsMobile] = useState(false);
   const [shopId, setShopId] = useState(null);
   const theme = useTheme();
-
-  useEffect(() => {
+const [showConfetti, setShowConfetti] = useState(false);
+  
+useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -55,8 +57,16 @@ export default function Clients() {
       const r = await fetch(`${API}/cards/${card.id}/stamp`, { method: 'POST' });
       const d = await r.json();
       if (d.error) { alert(d.error); }
-      else { alert(`✅ Tampon ajouté ! Total: ${d.data[0].stamps}`); }
-    } else { alert('Aucune carte trouvée pour ce client'); }
+else {
+  const stamps = d.data[0].stamps;
+  const shopData = localStorage.getItem('shop');
+  const required = shopData ? JSON.parse(shopData).card_stamps_required || 10 : 10;
+  if (stamps >= required) {
+    setShowConfetti(true);
+  } else {
+    alert(`✅ Tampon ajouté ! Total: ${stamps}`);
+  }
+}    } else { alert('Aucune carte trouvée pour ce client'); }
   };
 
   const voirCarte = async (clientId) => {
@@ -179,6 +189,8 @@ export default function Clients() {
           </div>
         )}
       </div>
+
+      <Confetti active={showConfetti} onDone={() => setShowConfetti(false)} />
 
       <style>{`
         @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
