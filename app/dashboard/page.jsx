@@ -2,11 +2,12 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import Sidebar from '../components/Sidebar';
+import Loader from '../components/Loader';
 
 const API = 'https://fideleasy-backend-production.up.railway.app';
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, stamps: 0 });
+  const [stats, setAStats] = useState({ clients: 0, cards: 0, notifications: 0, stamps: 0 });
   const [recentClients, setRecentClients] = useState([]);
   const [proStats, setProStats] = useState(null);
   const [shop, setShop] = useState(null);
@@ -54,6 +55,8 @@ export default function Dashboard() {
     { icon: '🎫', label: 'Tampons total', value: stats.stamps, color: '#a855f7', bg: 'rgba(168,85,247,0.1)' },
     { icon: '🔔', label: 'Notifications', value: stats.notifications, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
   ];
+
+  if (loading) return <Loader />;
 
   return (
     <div style={{display:'flex',minHeight:'100vh',background:theme.bg,color:theme.color,fontFamily:'system-ui,-apple-system,sans-serif',position:'relative'}}>
