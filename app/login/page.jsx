@@ -17,9 +17,13 @@ export default function Login() {
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      localStorage.setItem('token', data.token);
+     localStorage.setItem('token', data.token);
       localStorage.setItem('shop', JSON.stringify(data.shop));
-      window.location.href = '/dashboard';
+      console.log('Shop sauvegardé:', data.shop);
+      if (!data.shop?.id) {
+        throw new Error('Shop ID manquant — contactez le support');
+      }
+      window.location.href = '/dashboard'; 
     } catch (err) {
       setError(err.message);
     }
