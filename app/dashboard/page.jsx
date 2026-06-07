@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from '../context/ThemeContext';
 import Sidebar from '../components/Sidebar';
 import Loader from '../components/Loader';
@@ -7,13 +8,14 @@ import Loader from '../components/Loader';
 const API = 'https://fideleasy-backend-production.up.railway.app';
 
 export default function Dashboard() {
-  const [stats, setAStats] = useState({ clients: 0, cards: 0, notifications: 0, stamps: 0 });
+const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, stamps: 0 });
   const [recentClients, setRecentClients] = useState([]);
   const [proStats, setProStats] = useState(null);
   const [shop, setShop] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const theme = useTheme();
+  const router = useRouter();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -24,7 +26,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     const shopData = localStorage.getItem('shop');
-    if (!shopData) { setLoading(false); return; }
+    if (!shopData) {
+      router.push('/login');
+      return;
+    }
     const s = JSON.parse(shopData);
     setShop(s);
     const shopId = s.id;
@@ -42,10 +47,14 @@ export default function Dashboard() {
         stamps: totalStamps,
       });
       setRecentClients(customers.data?.slice(-5).reverse() || []);
+    }).catch(err => {
+      console.error('Erreur chargement dashboard:', err);
+    }).finally(() => {
       setLoading(false);
     });
+
     if (s.plan === 'pro' || s.plan === 'business') {
-      fetch(`${API}/stats/${shopId}`).then(r => r.json()).then(d => setProStats(d));
+      fetch(`${API}/stats/${shopId}`).then(r => r.json()).then(d => setProStats(d)).catch(() => {});
     }
   }, []);
 
@@ -67,7 +76,6 @@ export default function Dashboard() {
 
       <Sidebar activePage="/dashboard" />
 
-      {/* Main */}
       <div style={{marginLeft:isMobile?0:'240px',flex:1,padding:isMobile?'20px 16px 100px':'32px',position:'relative',zIndex:1}}>
         {isMobile && (
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px'}}>
@@ -96,7 +104,7 @@ export default function Dashboard() {
                 <span style={{fontSize:'10px',color:theme.textMuted,textTransform:'uppercase',letterSpacing:'0.8px'}}>{card.label}</span>
                 <div style={{width:'32px',height:'32px',borderRadius:'8px',background:card.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px'}}>{card.icon}</div>
               </div>
-              <p style={{fontSize:isMobile?'24px':'28px',fontWeight:'700',margin:0,color:card.color}}>{loading ? '...' : card.value}</p>
+              <p style={{fontSize:isMobile?'24px':'28px',fontWeight:'700',margin:0,color:card.color}}>{card.value}</p>
             </div>
           ))}
         </div>
@@ -107,9 +115,7 @@ export default function Dashboard() {
               <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:theme.textSecondary}}>👥 Derniers clients</h3>
               <a href="/clients" style={{fontSize:'12px',color:'#d4af37',textDecoration:'none',fontWeight:'600'}}>Voir tous →</a>
             </div>
-            {loading ? (
-              <p style={{color:theme.textMuted,fontSize:'14px'}}>Chargement...</p>
-            ) : recentClients.length === 0 ? (
+            {recentClients.length === 0 ? (
               <p style={{color:theme.textMuted,fontSize:'14px'}}>Aucun client pour l'instant</p>
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
