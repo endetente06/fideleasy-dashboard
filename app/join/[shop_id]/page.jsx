@@ -11,7 +11,7 @@ export default function Join() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [cardUrl, setCardUrl] = useState(null);
+  const [walletUrl, setWalletUrl] = useState(null);
 
   useEffect(() => {
     fetch(`${API}/shops/${shop_id}`)
@@ -34,12 +34,11 @@ export default function Join() {
         const cardRes = await fetch(`${API}/cards`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ customer_id: customer.id, shop_id, wallet_type: 'apple' })
+          body: JSON.stringify({ customer_id: customer.id, shop_id, wallet_type: 'passkit' })
         });
         const cardData = await cardRes.json();
-        const card = cardData.data?.[0];
-        if (card) {
-          setCardUrl(`${API}/pass/apple/${card.id}`);
+        if (cardData.wallet_url) {
+          setWalletUrl(cardData.wallet_url);
         }
       }
       setSuccess(true);
@@ -50,12 +49,7 @@ export default function Join() {
   };
 
   if (loading) return (
-    <div style={{
-      minHeight:'100vh',
-      background:'linear-gradient(135deg,#0a0a18 0%,#1a1020 50%,#0a1020 100%)',
-      display:'flex',alignItems:'center',justifyContent:'center',
-      fontFamily:'system-ui,sans-serif'
-    }}>
+    <div style={{minHeight:'100vh',background:'linear-gradient(135deg,#0a0a18 0%,#1a1020 50%,#0a1020 100%)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'system-ui,sans-serif'}}>
       <div style={{textAlign:'center',color:'rgba(255,255,255,0.4)'}}>
         <div style={{fontSize:'40px',marginBottom:'16px'}}>⏳</div>
         <p>Chargement...</p>
@@ -77,12 +71,12 @@ export default function Join() {
         <p style={{color:'rgba(255,255,255,0.5)',fontSize:'14px',marginBottom:'28px',lineHeight:'1.6'}}>
           Votre carte de fidélité est créée ! Ajoutez-la à votre téléphone en un clic.
         </p>
-        {cardUrl && (
+        {walletUrl && (
           <div style={{display:'flex',flexDirection:'column',gap:'12px',marginBottom:'24px'}}>
-            <a href={cardUrl} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'10px',background:'black',color:'white',borderRadius:'12px',padding:'14px 24px',textDecoration:'none',fontSize:'15px',fontWeight:'600',boxShadow:'0 4px 20px rgba(0,0,0,0.4)'}}>
+            <a href={`${walletUrl}.pkpass`} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'10px',background:'black',color:'white',borderRadius:'12px',padding:'14px 24px',textDecoration:'none',fontSize:'15px',fontWeight:'600',boxShadow:'0 4px 20px rgba(0,0,0,0.4)'}}>
               🍎 Ajouter à Apple Wallet
             </a>
-            <a href={`${API}/pass/google/${cardUrl.split('/').pop()}`} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'10px',background:'white',color:'#1a1a2e',borderRadius:'12px',padding:'14px 24px',textDecoration:'none',fontSize:'15px',fontWeight:'600'}}>
+            <a href={`${walletUrl}.gpay`} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'10px',background:'white',color:'#1a1a2e',borderRadius:'12px',padding:'14px 24px',textDecoration:'none',fontSize:'15px',fontWeight:'600'}}>
               🟢 Ajouter à Google Wallet
             </a>
           </div>
@@ -117,7 +111,7 @@ export default function Join() {
     </div>
   );
 
-return (
+  return (
     <div style={{minHeight:'100vh',background:'linear-gradient(135deg,#0a0a18 0%,#1a1020 50%,#0a1020 100%)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'system-ui,-apple-system,sans-serif',padding:'24px',position:'relative',overflow:'hidden'}}>
       <div style={{position:'absolute',inset:0,pointerEvents:'none'}}>
         <div style={{position:'absolute',top:'10%',left:'5%',width:'300px',height:'300px',borderRadius:'50%',background:'rgba(212,175,55,0.05)',animation:'float1 8s ease-in-out infinite'}}/>
