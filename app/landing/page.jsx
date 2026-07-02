@@ -32,7 +32,7 @@ export default function Landing() {
       monthlyPrice: 39,
       yearlyPrice: 33,
       features: ['500 clients max', '3 commerces', 'Apple & Google Wallet', 'QR Code', 'Notifications push', 'Carte personnalisée avec photo', 'Support prioritaire'],
-      cta: 'Commencer gratuitement',
+      cta: 'Passer au Pro',
       popular: true,
     },
     {
@@ -40,7 +40,7 @@ export default function Landing() {
       monthlyPrice: 79,
       yearlyPrice: 66,
       features: ['Clients illimités', 'Commerces illimités', 'Apple & Google Wallet', 'QR Code', 'Notifications push', 'Carte personnalisée avec photo', 'Support prioritaire 24/7', 'API access'],
-      cta: 'Commencer gratuitement',
+      cta: 'Passer au Business',
       popular: false,
     },
   ];
