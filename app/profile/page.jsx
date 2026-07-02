@@ -11,7 +11,7 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', passkit_program_id: '' });
   const theme = useTheme();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function Profile() {
     if (!shopData) { setLoading(false); return; }
     const s = JSON.parse(shopData);
     setShop(s);
-    setForm(f => ({ ...f, name: s.name || '', email: s.email || '' }));
+    setForm(f => ({ ...f, name: s.name || '', email: s.email || '', passkit_program_id: s.passkit_program_id || '' }));
     setLoading(false);
   }, []);
 
@@ -68,6 +68,21 @@ export default function Profile() {
     }
     setSaving(true);
     setSuccess('✅ Mot de passe mis à jour !');
+    setTimeout(() => setSuccess(''), 3000);
+    setSaving(false);
+  };
+
+  const savePassKit = async () => {
+    setSaving(true);
+    await fetch(`${API}/shops/${shop.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ passkit_program_id: form.passkit_program_id })
+    });
+    const updated = { ...shop, passkit_program_id: form.passkit_program_id };
+    localStorage.setItem('shop', JSON.stringify(updated));
+    setShop(updated);
+    setSuccess('✅ PassKit configuré !');
     setTimeout(() => setSuccess(''), 3000);
     setSaving(false);
   };
@@ -154,6 +169,25 @@ export default function Profile() {
               </div>
               <a href="/landing#pricing" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>Changer de plan</a>
             </div>
+          </div>
+
+          <div style={{background:'rgba(59,130,246,0.06)',border:'1px solid rgba(59,130,246,0.2)',borderRadius:'16px',padding:'24px',backdropFilter:'blur(10px)'}}>
+            <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 6px',color:theme.textSecondary}}>💳 PassKit — Carte de fidélité</h3>
+            <p style={{fontSize:'12px',color:theme.textMuted,margin:'0 0 16px'}}>
+              Collez votre Program ID PassKit pour activer les cartes Apple & Google Wallet personnalisées.
+              Trouvez-le dans <strong style={{color:'#93c5fd'}}>app.passkit.com → votre programme → URL</strong>.
+            </p>
+            <input
+              value={form.passkit_program_id}
+              onChange={e => setForm({...form, passkit_program_id: e.target.value})}
+              style={inputStyle}
+              placeholder="ex: 2aTM3FUCMZxmN34tgtLqQ6"
+              onFocus={e=>e.target.style.borderColor='rgba(59,130,246,0.5)'}
+              onBlur={e=>e.target.style.borderColor=theme.inputBorder}
+            />
+            <button onClick={savePassKit} disabled={saving} style={{marginTop:'12px',background:'#3b82f6',color:'white',border:'none',borderRadius:'10px',padding:'10px 24px',cursor:'pointer',fontSize:'14px',fontWeight:'600'}}>
+              {saving ? 'Sauvegarde...' : 'Enregistrer'}
+            </button>
           </div>
         </div>
       </div>
