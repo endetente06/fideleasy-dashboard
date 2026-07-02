@@ -252,7 +252,7 @@ export default function Landing() {
     const data = await res.json();
     if (data.url) window.location.href = data.url;
   }}
-  style={{display:'block',width:'100%',textAlign:'center',padding:'14px',borderRadius:'50px',fontSize:'15px',fontWeight:'700',background:plan.popular?'#d4af37':'rgba(255,255,255,0.05)',color:'white',border:plan.popular?'none':'1px solid rgba(255,255,255,0.1)',cursor:'pointer'}}
+  style={{display:'block',width:'100%',textAlign:'center',padding:'14px',borderRadius:'50px',fontSize:'15px',fontWeight:'700',background:plan.popular?'#d4af37':'#1a1a2e',color:'white',border:'none',cursor:'pointer'}}
 >
   {plan.cta}
 </button>
