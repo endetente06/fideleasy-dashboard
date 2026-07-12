@@ -32,7 +32,7 @@ export default function Landing() {
       monthlyPrice: 39,
       yearlyPrice: 33,
       features: ['500 clients max', '3 commerces', 'Apple & Google Wallet', 'QR Code', 'Notifications push', 'Carte personnalisée avec photo', 'Support prioritaire'],
-      cta: 'Passer au Pro',
+      cta: 'Commencer gratuitement',
       popular: true,
     },
     {
@@ -40,7 +40,7 @@ export default function Landing() {
       monthlyPrice: 79,
       yearlyPrice: 66,
       features: ['Clients illimités', 'Commerces illimités', 'Apple & Google Wallet', 'QR Code', 'Notifications push', 'Carte personnalisée avec photo', 'Support prioritaire 24/7', 'API access'],
-      cta: 'Passer au Business',
+      cta: 'Commencer gratuitement',
       popular: false,
     },
   ];
@@ -240,18 +240,7 @@ export default function Landing() {
                 ))}
               </ul>
               <button
-  onClick={async () => {
-    if (plan.name === 'Starter') { window.location.href = '/register'; return; }
-    const shop = JSON.parse(localStorage.getItem('shop') || '{}');
-    if (!shop?.id) { window.location.href = '/register'; return; }
-    const res = await fetch('https://fideleasy-backend-production.up.railway.app/stripe/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: plan.name.toLowerCase(), shop_id: shop.id })
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-  }}
+  onClick={async () => { window.location.href = '/register'; }}
   style={{display:'block',width:'100%',textAlign:'center',padding:'14px',borderRadius:'50px',fontSize:'15px',fontWeight:'700',background:plan.popular?'#d4af37':'#1a1a2e',color:'white',border:'none',cursor:'pointer'}}
 >
   {plan.cta}
