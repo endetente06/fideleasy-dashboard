@@ -169,7 +169,17 @@ const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, sta
                 ))}
               </div>
               {shop?.plan === 'starter' && (
-                <a href="/landing#pricing" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'8px',padding:'10px',fontSize:'13px',textDecoration:'none',fontWeight:'700'}}>Passer au Pro 🚀</a>
+              <button onClick={async () => {
+  const res = await fetch('https://fideleasy-backend-production.up.railway.app/stripe/checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan: 'pro', shop_id: shop.id })
+  });
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+}} style={{display:'block',width:'100%',textAlign:'center',background:'#d4af37',color:'white',border:'none',borderRadius:'8px',padding:'10px',fontSize:'13px',fontWeight:'700',cursor:'pointer'}}>
+  Passer au Pro 🚀
+</button>
               )}
             </div>
           </div>
