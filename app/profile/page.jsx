@@ -167,7 +167,18 @@ export default function Profile() {
                 <p style={{margin:0,fontSize:'14px',color:theme.textMuted}}>Plan actuel</p>
                 <p style={{margin:'4px 0 0',fontSize:'20px',fontWeight:'700',color:'#d4af37',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</p>
               </div>
-              <a href="/landing#pricing" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>Changer de plan</a>
+              <button onClick={async () => {
+  const targetPlan = shop?.plan === 'starter' ? 'pro' : 'business';
+  const res = await fetch('https://fideleasy-backend-production.up.railway.app/stripe/checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan: targetPlan, shop_id: shop.id })
+  });
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+}} style={{background:'#d4af37',color:'white',border:'none',borderRadius:'10px',padding:'10px 20px',fontSize:'14px',fontWeight:'600',cursor:'pointer'}}>
+  {shop?.plan === 'starter' ? 'Passer au Pro 🚀' : 'Passer au Business 💼'}
+</button>
             </div>
           </div>
 
