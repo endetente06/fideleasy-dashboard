@@ -8,7 +8,7 @@ import Loader from '../components/Loader';
 const API = 'https://fideleasy-backend-production.up.railway.app';
 
 export default function Dashboard() {
-const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, stamps: 0 });
+  const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, stamps: 0 });
   const [recentClients, setRecentClients] = useState([]);
   const [proStats, setProStats] = useState(null);
   const [shop, setShop] = useState(null);
@@ -16,6 +16,8 @@ const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, sta
   const [isMobile, setIsMobile] = useState(false);
   const theme = useTheme();
   const router = useRouter();
+
+  const isDark = theme.bg === '#0a0a18' || theme.bg?.includes('0a0a');
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -26,10 +28,7 @@ const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, sta
 
   useEffect(() => {
     const shopData = localStorage.getItem('shop');
-    if (!shopData) {
-      router.push('/login');
-      return;
-    }
+    if (!shopData) { router.push('/login'); return; }
     const s = JSON.parse(shopData);
     setShop(s);
     const shopId = s.id;
@@ -49,200 +48,198 @@ const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, sta
       setRecentClients(customers.data?.slice(-5).reverse() || []);
     }).catch(err => {
       console.error('Erreur chargement dashboard:', err);
-    }).finally(() => {
-      setLoading(false);
-    });
+    }).finally(() => setLoading(false));
 
     if (s.plan === 'pro' || s.plan === 'business') {
       fetch(`${API}/stats/${shopId}`).then(r => r.json()).then(d => setProStats(d)).catch(() => {});
     }
   }, []);
 
-  const statCards = [
-    { icon: '👥', label: 'Clients', value: stats.clients, color: '#d4af37', bg: 'rgba(212,175,55,0.1)' },
-    { icon: '💳', label: 'Cartes actives', value: stats.cards, color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-    { icon: '🎫', label: 'Tampons total', value: stats.stamps, color: '#a855f7', bg: 'rgba(168,85,247,0.1)' },
-    { icon: '🔔', label: 'Notifications', value: stats.notifications, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
-  ];
-
   if (loading) return <Loader />;
 
-  return (
-    <div style={{display:'flex',minHeight:'100vh',background:theme.bg,color:theme.color,fontFamily:'system-ui,-apple-system,sans-serif',position:'relative'}}>
-      <div style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:0}}>
-        <div style={{position:'absolute',top:'10%',left:'5%',width:'400px',height:'400px',borderRadius:'50%',background:'rgba(212,175,55,0.04)',animation:'float1 8s ease-in-out infinite'}}/>
-        <div style={{position:'absolute',bottom:'10%',right:'5%',width:'300px',height:'300px',borderRadius:'50%',background:'rgba(212,175,55,0.03)',animation:'float2 10s ease-in-out infinite'}}/>
-      </div>
+  const bg = isDark ? '#0f0f12' : '#f5f4f1';
+  const surface = isDark ? '#18181b' : '#ffffff';
+  const surfaceHover = isDark ? '#1f1f23' : '#f9f8f6';
+  const border = isDark ? '#27272a' : '#e4e2dc';
+  const text = isDark ? '#fafafa' : '#18181b';
+  const textMuted = isDark ? '#71717a' : '#a1a1aa';
+  const accent = '#d4af37';
 
+  const statCards = [
+    { label: 'Clients', value: stats.clients },
+    { label: 'Tampons', value: stats.stamps, accent: true },
+    { label: 'Cartes actives', value: stats.cards },
+    { label: 'Notifications', value: stats.notifications },
+  ];
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', background: bg, color: text, fontFamily: 'system-ui,-apple-system,sans-serif' }}>
       <Sidebar activePage="/dashboard" />
 
-      <div style={{marginLeft:isMobile?0:'240px',flex:1,padding:isMobile?'20px 16px 100px':'32px',position:'relative',zIndex:1}}>
-        {isMobile && (
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px'}}>
-            <h1 style={{fontSize:'20px',fontWeight:'800',margin:0}}>Fidel<span style={{color:'#d4af37'}}>Easy</span></h1>
-            {shop && <span style={{fontSize:'13px',color:theme.textMuted}}>{shop.name}</span>}
-          </div>
-        )}
+      <div style={{ marginLeft: isMobile ? 0 : '240px', flex: 1, padding: isMobile ? '20px 16px 100px' : '40px 32px', maxWidth: '1200px' }}>
 
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'28px',flexWrap:'wrap',gap:'12px'}}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
           <div>
-            <h2 style={{fontSize:isMobile?'22px':'24px',fontWeight:'700',margin:'0 0 4px'}}>Tableau de bord</h2>
-            <p style={{color:theme.textMuted,margin:0,fontSize:'14px'}}>Bienvenue sur FidelEasy 👋</p>
+            <h1 style={{ fontSize: '22px', fontWeight: '500', margin: '0 0 4px', color: text }}>Tableau de bord</h1>
+            <p style={{ margin: 0, fontSize: '13px', color: textMuted }}>
+              {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
           </div>
           {!isMobile && (
-            <div style={{display:'flex',gap:'12px',alignItems:'center'}}>
-              <a href="/qrcode" style={{background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',color:'#d4af37',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>📱 Mon QR Code</a>
-              <a href="/clients" style={{background:'#d4af37',color:'white',borderRadius:'10px',padding:'10px 20px',textDecoration:'none',fontSize:'14px',fontWeight:'600'}}>+ Ajouter un client</a>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <a href="/qrcode" style={{ border: `0.5px solid ${border}`, borderRadius: '6px', padding: '8px 16px', fontSize: '13px', color: text, textDecoration: 'none', background: surface }}>
+                Mon QR Code
+              </a>
+              <a href="/clients" style={{ background: accent, borderRadius: '6px', padding: '8px 16px', fontSize: '13px', color: '#000', fontWeight: '500', textDecoration: 'none' }}>
+                + Ajouter un client
+              </a>
             </div>
           )}
         </div>
 
-        <div style={{display:'grid',gridTemplateColumns:isMobile?'repeat(2,1fr)':'repeat(4,1fr)',gap:'12px',marginBottom:'24px'}}>
+        {/* Stats */}
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: '12px', marginBottom: '24px' }}>
           {statCards.map(card => (
-            <div key={card.label} style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:isMobile?'16px':'20px',backdropFilter:'blur(10px)'}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px'}}>
-                <span style={{fontSize:'10px',color:theme.textMuted,textTransform:'uppercase',letterSpacing:'0.8px'}}>{card.label}</span>
-                <div style={{width:'32px',height:'32px',borderRadius:'8px',background:card.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px'}}>{card.icon}</div>
-              </div>
-              <p style={{fontSize:isMobile?'24px':'28px',fontWeight:'700',margin:0,color:card.color}}>{card.value}</p>
+            <div key={card.label} style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px' }}>
+              <p style={{ margin: '0 0 8px', fontSize: '11px', color: textMuted, textTransform: 'uppercase', letterSpacing: '0.8px' }}>{card.label}</p>
+              <p style={{ margin: 0, fontSize: '28px', fontWeight: '500', color: card.accent ? accent : text }}>{card.value}</p>
             </div>
           ))}
         </div>
 
-        <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'16px',marginBottom:'16px'}}>
-          <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
-              <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:theme.textSecondary}}>👥 Derniers clients</h3>
-              <a href="/clients" style={{fontSize:'12px',color:'#d4af37',textDecoration:'none',fontWeight:'600'}}>Voir tous →</a>
+        {/* Main grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+
+          {/* Derniers clients */}
+          <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <p style={{ margin: 0, fontSize: '13px', fontWeight: '500', color: text }}>Derniers clients</p>
+              <a href="/clients" style={{ fontSize: '12px', color: accent, textDecoration: 'none' }}>Voir tous →</a>
             </div>
             {recentClients.length === 0 ? (
-              <p style={{color:theme.textMuted,fontSize:'14px'}}>Aucun client pour l'instant</p>
+              <p style={{ color: textMuted, fontSize: '13px', margin: 0 }}>Aucun client pour l'instant</p>
             ) : (
-              <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
-                {recentClients.map(client => (
-                  <div key={client.id} style={{display:'flex',alignItems:'center',gap:'12px',padding:'10px',background:theme.cardBg,borderRadius:'10px'}}>
-                    <div style={{width:'34px',height:'34px',borderRadius:'50%',background:'rgba(212,175,55,0.2)',display:'flex',alignItems:'center',justifyContent:'center',color:'#d4af37',fontWeight:'700',fontSize:'14px',flexShrink:0}}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {recentClients.map((client, i) => (
+                  <div key={client.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: i < recentClients.length - 1 ? `0.5px solid ${border}` : 'none' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: isDark ? '#27272a' : '#f0ede6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '500', color: accent, flexShrink: 0 }}>
                       {client.name?.charAt(0).toUpperCase()}
                     </div>
-                    <div style={{flex:1,minWidth:0}}>
-                      <p style={{margin:0,fontWeight:'600',fontSize:'13px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{client.name}</p>
-                      <p style={{margin:0,fontSize:'11px',color:theme.textMuted,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{client.email || client.phone || '—'}</p>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ margin: 0, fontSize: '13px', fontWeight: '500', color: text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{client.name}</p>
+                      <p style={{ margin: 0, fontSize: '11px', color: textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{client.email || client.phone || '—'}</p>
                     </div>
-                    <span style={{fontSize:'11px',color:theme.textMuted,flexShrink:0}}>Nouveau</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          <div style={{display:'flex',flexDirection:'column',gap:'16px'}}>
-            <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-              <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 14px',color:theme.textSecondary}}>⚡ Actions rapides</h3>
-              <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+          {/* Actions rapides */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px' }}>
+              <p style={{ margin: '0 0 12px', fontSize: '13px', fontWeight: '500', color: text }}>Actions rapides</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {[
-                  { icon:'👥', label:'Gérer mes clients', href:'/clients', color:'#d4af37' },
-                  { icon:'🎫', label:'Tamponner un client', href:'/clients', color:'#22c55e' },
-                  { icon:'🔔', label:'Envoyer une notification', href:'/notifications', color:'#a855f7' },
-                  { icon:'📱', label:'Afficher mon QR Code', href:'/qrcode', color:'#3b82f6' },
+                  { label: 'Gérer mes clients', href: '/clients' },
+                  { label: 'Tamponner un client', href: '/clients' },
+                  { label: 'Envoyer une notification', href: '/notifications' },
+                  { label: 'Afficher mon QR Code', href: '/qrcode' },
                 ].map(action => (
-                  <a key={action.label} href={action.href} style={{display:'flex',alignItems:'center',gap:'10px',background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'10px',padding:'12px',textDecoration:'none',color:theme.color}}>
-                    <div style={{width:'32px',height:'32px',borderRadius:'8px',background:`${action.color}20`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}}>{action.icon}</div>
-                    <span style={{fontSize:'13px',fontWeight:'500'}}>{action.label}</span>
-                    <span style={{marginLeft:'auto',color:theme.textMuted,fontSize:'12px'}}>→</span>
+                  <a key={action.label} href={action.href} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: surfaceHover, border: `0.5px solid ${border}`, borderRadius: '6px', textDecoration: 'none', color: text, fontSize: '13px' }}>
+                    {action.label}
+                    <span style={{ color: textMuted }}>→</span>
                   </a>
                 ))}
               </div>
             </div>
-            <div style={{background:'rgba(212,175,55,0.06)',border:'1px solid rgba(212,175,55,0.15)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
-                <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:theme.textSecondary}}>⭐ Mon plan</h3>
-                <span style={{background:'rgba(212,175,55,0.2)',color:'#d4af37',borderRadius:'20px',padding:'4px 12px',fontSize:'12px',fontWeight:'700',textTransform:'capitalize'}}>{shop?.plan || 'Starter'}</span>
-              </div>
-              <div style={{display:'flex',flexDirection:'column',gap:'6px',marginBottom:'14px'}}>
-                {[
-                  '✓ Apple & Google Wallet',
-                  '✓ QR Code d\'inscription',
-                  '✓ Notifications push',
-                  shop?.plan === 'pro' || shop?.plan === 'business' ? '✓ Carte personnalisée' : '✗ Carte personnalisée (Pro)',
-                ].map((f,i) => (
-                  <p key={i} style={{margin:0,fontSize:'12px',color:f.startsWith('✗')?theme.textMuted:theme.textSecondary}}>{f}</p>
-                ))}
+
+            {/* Mon plan */}
+            <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <p style={{ margin: 0, fontSize: '13px', fontWeight: '500', color: text }}>Mon plan</p>
+                <span style={{ background: isDark ? '#27272a' : '#f0ede6', color: accent, borderRadius: '4px', padding: '3px 10px', fontSize: '11px', fontWeight: '500', textTransform: 'capitalize' }}>{shop?.plan || 'Starter'}</span>
               </div>
               {shop?.plan === 'starter' && (
-              <button onClick={async () => {
-  const res = await fetch('https://fideleasy-backend-production.up.railway.app/stripe/checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ plan: 'pro', shop_id: shop.id })
-  });
-  const data = await res.json();
-  if (data.url) window.location.href = data.url;
-}} style={{display:'block',width:'100%',textAlign:'center',background:'#d4af37',color:'white',border:'none',borderRadius:'8px',padding:'10px',fontSize:'13px',fontWeight:'700',cursor:'pointer'}}>
-  Passer au Pro 🚀
-</button>
+                <button onClick={async () => {
+                  const res = await fetch(`${API}/stripe/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan: 'pro', shop_id: shop.id }) });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                }} style={{ width: '100%', background: accent, border: 'none', borderRadius: '6px', padding: '9px', fontSize: '13px', fontWeight: '500', color: '#000', cursor: 'pointer', marginTop: '4px' }}>
+                  Passer au Pro →
+                </button>
+              )}
+              {shop?.plan === 'pro' && (
+                <button onClick={async () => {
+                  const res = await fetch(`${API}/stripe/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan: 'business', shop_id: shop.id }) });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                }} style={{ width: '100%', background: 'transparent', border: `0.5px solid ${border}`, borderRadius: '6px', padding: '9px', fontSize: '13px', color: text, cursor: 'pointer', marginTop: '4px' }}>
+                  Passer au Business →
+                </button>
               )}
             </div>
           </div>
         </div>
 
+        {/* Stats Pro */}
         {(shop?.plan === 'pro' || shop?.plan === 'business') && proStats && (
-          <div style={{display:'flex',flexDirection:'column',gap:'16px',marginTop:'16px'}}>
-            <div style={{display:'grid',gridTemplateColumns:isMobile?'repeat(2,1fr)':'repeat(4,1fr)',gap:'12px'}}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '0' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: '12px' }}>
               {[
-                { icon:'📈', label:'Tampons cette semaine', value: proStats.weekStamps, color:'#22c55e', bg:'rgba(34,197,94,0.1)', suffix:'' },
-                { icon:'🔄', label:'Taux de rétention', value: proStats.retentionRate, color:'#a855f7', bg:'rgba(168,85,247,0.1)', suffix:'%' },
-                { icon:'🏆', label:'Cartes complétées', value: proStats.completedCards, color:'#d4af37', bg:'rgba(212,175,55,0.1)', suffix:'' },
-                { icon:'📅', label:'Tampons ce mois', value: proStats.monthStamps, color:'#3b82f6', bg:'rgba(59,130,246,0.1)', suffix:'' },
+                { label: 'Tampons cette semaine', value: proStats.weekStamps },
+                { label: 'Taux de rétention', value: `${proStats.retentionRate}%` },
+                { label: 'Cartes complétées', value: proStats.completedCards },
+                { label: 'Tampons ce mois', value: proStats.monthStamps },
               ].map(card => (
-                <div key={card.label} style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:isMobile?'14px':'18px',backdropFilter:'blur(10px)'}}>
-                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'8px'}}>
-                    <span style={{fontSize:'10px',color:theme.textMuted,textTransform:'uppercase',letterSpacing:'0.8px'}}>{card.label}</span>
-                    <div style={{width:'28px',height:'28px',borderRadius:'8px',background:card.bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px'}}>{card.icon}</div>
-                  </div>
-                  <p style={{fontSize:isMobile?'22px':'26px',fontWeight:'700',margin:0,color:card.color}}>{card.value}{card.suffix}</p>
+                <div key={card.label} style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px' }}>
+                  <p style={{ margin: '0 0 8px', fontSize: '11px', color: textMuted, textTransform: 'uppercase', letterSpacing: '0.8px' }}>{card.label}</p>
+                  <p style={{ margin: 0, fontSize: '24px', fontWeight: '500', color: text }}>{card.value}</p>
                 </div>
               ))}
             </div>
 
-            <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'16px'}}>
-              <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
-                  <h3 style={{fontSize:'15px',fontWeight:'600',margin:0,color:theme.textSecondary}}>📈 Tampons cette semaine</h3>
-                  <span style={{fontSize:'12px',color:proStats.weekGrowth>=0?'#22c55e':'#ef4444',fontWeight:'600'}}>{proStats.weekGrowth>=0?'+':''}{proStats.weekGrowth}% vs semaine dernière</span>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
+              {/* Graphique semaine */}
+              <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <p style={{ margin: 0, fontSize: '13px', fontWeight: '500', color: text }}>Tampons cette semaine</p>
+                  <span style={{ fontSize: '12px', color: proStats.weekGrowth >= 0 ? '#22c55e' : '#ef4444' }}>
+                    {proStats.weekGrowth >= 0 ? '+' : ''}{proStats.weekGrowth}%
+                  </span>
                 </div>
-                <div style={{display:'flex',alignItems:'flex-end',gap:'6px',height:'100px'}}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '80px' }}>
                   {proStats.stampsByDay.map((d, i) => {
                     const max = Math.max(...proStats.stampsByDay.map(x => x.count), 1);
-                    const height = Math.max((d.count / max) * 85, 4);
+                    const height = Math.max((d.count / max) * 70, 3);
                     const today = new Date().getDay();
                     return (
-                      <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'4px'}}>
-                        <span style={{fontSize:'10px',color:'#d4af37',fontWeight:'600'}}>{d.count > 0 ? d.count : ''}</span>
-                        <div style={{width:'100%',height:`${height}px`,background:i===today?'#d4af37':'rgba(212,175,55,0.3)',borderRadius:'4px'}}/>
-                        <span style={{fontSize:'9px',color:i===today?'#d4af37':theme.textMuted,fontWeight:i===today?'700':'400'}}>{d.day}</span>
+                      <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                        <div style={{ width: '100%', height: `${height}px`, background: i === today ? accent : (isDark ? '#27272a' : '#e4e2dc'), borderRadius: '3px' }} />
+                        <span style={{ fontSize: '9px', color: i === today ? accent : textMuted }}>{d.day}</span>
                       </div>
                     );
                   })}
                 </div>
               </div>
-              <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-                <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 16px',color:theme.textSecondary}}>🏆 Top clients</h3>
+
+              {/* Top clients */}
+              <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px' }}>
+                <p style={{ margin: '0 0 16px', fontSize: '13px', fontWeight: '500', color: text }}>Top clients</p>
                 {proStats.topClients.length === 0 ? (
-                  <p style={{color:theme.textMuted,fontSize:'13px'}}>Aucun client pour l'instant</p>
+                  <p style={{ color: textMuted, fontSize: '13px', margin: 0 }}>Aucun client pour l'instant</p>
                 ) : (
-                  <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {proStats.topClients.map((card, i) => (
-                      <div key={card.id} style={{display:'flex',alignItems:'center',gap:'10px',padding:'8px',background:theme.cardBg,borderRadius:'8px'}}>
-                        <span style={{fontSize:'14px',fontWeight:'700',color:i===0?'#d4af37':i===1?'#94a3b8':i===2?'#cd7c3a':theme.textMuted,width:'24px',flexShrink:0}}>#{i+1}</span>
-                        <div style={{flex:1}}>
-                          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}}>
-                            <span style={{fontSize:'12px',color:theme.textSecondary}}>{card.stamps || 0} tampons</span>
-                            <span style={{fontSize:'11px',color:theme.textMuted}}>{Math.round(((card.stamps||0)/(shop?.card_stamps_required||10))*100)}%</span>
-                          </div>
-                          <div style={{height:'4px',borderRadius:'2px',background:theme.cardBorder,overflow:'hidden'}}>
-                            <div style={{height:'100%',borderRadius:'2px',background:'#d4af37',width:`${Math.min(((card.stamps||0)/(shop?.card_stamps_required||10))*100,100)}%`}}/>
+                      <div key={card.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontSize: '12px', color: i === 0 ? accent : textMuted, width: '20px', flexShrink: 0 }}>#{i + 1}</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ height: '4px', borderRadius: '2px', background: isDark ? '#27272a' : '#e4e2dc', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', background: accent, width: `${Math.min(((card.stamps || 0) / (shop?.card_stamps_required || 10)) * 100, 100)}%`, borderRadius: '2px' }} />
                           </div>
                         </div>
+                        <span style={{ fontSize: '12px', color: textMuted, flexShrink: 0 }}>{card.stamps || 0} pts</span>
                       </div>
                     ))}
                   </div>
@@ -250,79 +247,54 @@ const [stats, setStats] = useState({ clients: 0, cards: 0, notifications: 0, sta
               </div>
             </div>
 
-            {shop?.plan === 'business' && (
-              <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr 1fr',gap:'16px'}}>
-                <div style={{background:'rgba(212,175,55,0.06)',border:'1px solid rgba(212,175,55,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-                  <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 12px',color:theme.textSecondary,textTransform:'uppercase',letterSpacing:'0.8px'}}>💰 CA estimé généré</h3>
-                  <p style={{fontSize:'32px',fontWeight:'800',margin:'0 0 4px',color:'#d4af37'}}>{proStats.estimatedRevenue}€</p>
-                  <p style={{fontSize:'12px',color:theme.textMuted,margin:0}}>Basé sur {proStats.totalStamps} visites à 15€ moy.</p>
+            {/* Clients inactifs */}
+            {proStats.inactiveCount > 0 && (
+              <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <p style={{ margin: '0 0 2px', fontSize: '13px', fontWeight: '500', color: text }}>{proStats.inactiveCount} client{proStats.inactiveCount > 1 ? 's' : ''} inactif{proStats.inactiveCount > 1 ? 's' : ''}</p>
+                  <p style={{ margin: 0, fontSize: '12px', color: textMuted }}>Sans tampon depuis 30 jours</p>
                 </div>
-                <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-                  <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 12px',color:theme.textSecondary,textTransform:'uppercase',letterSpacing:'0.8px'}}>👥 Clients actifs / inactifs</h3>
-                  <div style={{display:'flex',gap:'12px',alignItems:'center',marginBottom:'12px'}}>
-                    <div style={{textAlign:'center'}}>
-                      <p style={{fontSize:'24px',fontWeight:'800',margin:0,color:'#22c55e'}}>{proStats.activeClients}</p>
-                      <p style={{fontSize:'11px',color:theme.textMuted,margin:0}}>Actifs</p>
-                    </div>
-                    <div style={{flex:1,height:'8px',borderRadius:'4px',background:theme.cardBorder,overflow:'hidden'}}>
-                      <div style={{height:'100%',borderRadius:'4px',background:'linear-gradient(90deg,#22c55e,#ef4444)',width:'100%'}}/>
-                    </div>
-                    <div style={{textAlign:'center'}}>
-                      <p style={{fontSize:'24px',fontWeight:'800',margin:0,color:'#ef4444'}}>{proStats.inactiveCount}</p>
-                      <p style={{fontSize:'11px',color:theme.textMuted,margin:0}}>Inactifs</p>
-                    </div>
-                  </div>
-                  <p style={{fontSize:'12px',color:theme.textMuted,margin:0}}>Taux de rétention : <span style={{color:'#a855f7',fontWeight:'700'}}>{proStats.retentionRate}%</span></p>
-                </div>
-                <div style={{background:'rgba(59,130,246,0.06)',border:'1px solid rgba(59,130,246,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
-                  <div>
-                    <h3 style={{fontSize:'13px',fontWeight:'600',margin:'0 0 8px',color:theme.textSecondary,textTransform:'uppercase',letterSpacing:'0.8px'}}>📥 Export données</h3>
-                    <p style={{fontSize:'12px',color:theme.textMuted,margin:'0 0 16px'}}>Exportez vos clients et statistiques en CSV</p>
-                  </div>
-                  <button onClick={async () => {
-                    const shopData = localStorage.getItem('shop');
-                    const shopId = JSON.parse(shopData).id;
-                    const res = await fetch(`${API}/customers/${shopId}`);
-                    const data = await res.json();
-                    const clients = data.data || [];
-                    const csv = ['Nom,Email,Téléphone', ...clients.map(c => `${c.name},${c.email||''},${c.phone||''}`)].join('\n');
-                    const blob = new Blob([csv], { type: 'text/csv' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'clients-fideleasy.csv';
-                    a.click();
-                  }} style={{background:'rgba(59,130,246,0.15)',color:'#93c5fd',border:'1px solid rgba(59,130,246,0.3)',borderRadius:'8px',padding:'10px',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>
-                    ⬇️ Télécharger CSV
-                  </button>
-                </div>
+                <a href="/notifications" style={{ background: 'transparent', border: `0.5px solid ${border}`, borderRadius: '6px', padding: '8px 16px', fontSize: '13px', color: text, textDecoration: 'none' }}>
+                  Envoyer une offre →
+                </a>
               </div>
             )}
 
-            {proStats.inactiveCount > 0 && (
-              <div style={{background:'rgba(239,68,68,0.06)',border:'1px solid rgba(239,68,68,0.2)',borderRadius:'16px',padding:'20px',backdropFilter:'blur(10px)'}}>
-                <h3 style={{fontSize:'15px',fontWeight:'600',margin:'0 0 8px',color:'#fca5a5'}}>⚠️ {proStats.inactiveCount} client{proStats.inactiveCount > 1 ? 's' : ''} inactif{proStats.inactiveCount > 1 ? 's' : ''}</h3>
-                <p style={{fontSize:'13px',color:theme.textSecondary,margin:'0 0 12px'}}>Ces clients n'ont pas été tamponnés depuis 30 jours — envoyez leur une offre !</p>
-                <a href="/notifications" style={{display:'inline-block',background:'rgba(239,68,68,0.15)',color:'#fca5a5',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'8px 16px',fontSize:'13px',fontWeight:'600',textDecoration:'none'}}>
-                  🔔 Envoyer une offre de relance →
-                </a>
+            {/* Business export */}
+            {shop?.plan === 'business' && (
+              <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <p style={{ margin: '0 0 2px', fontSize: '13px', fontWeight: '500', color: text }}>Export données</p>
+                  <p style={{ margin: 0, fontSize: '12px', color: textMuted }}>CA estimé : {proStats.estimatedRevenue}€</p>
+                </div>
+                <button onClick={async () => {
+                  const shopData = localStorage.getItem('shop');
+                  const shopId = JSON.parse(shopData).id;
+                  const res = await fetch(`${API}/customers/${shopId}`);
+                  const data = await res.json();
+                  const clients = data.data || [];
+                  const csv = ['Nom,Email,Téléphone', ...clients.map(c => `${c.name},${c.email || ''},${c.phone || ''}`)].join('\n');
+                  const blob = new Blob([csv], { type: 'text/csv' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'clients-fideleasy.csv';
+                  a.click();
+                }} style={{ background: 'transparent', border: `0.5px solid ${border}`, borderRadius: '6px', padding: '8px 16px', fontSize: '13px', color: text, cursor: 'pointer' }}>
+                  Télécharger CSV
+                </button>
               </div>
             )}
           </div>
         )}
 
+        {/* Mobile CTA */}
         {isMobile && (
-          <a href="/clients" style={{display:'block',textAlign:'center',background:'#d4af37',color:'white',borderRadius:'12px',padding:'14px',textDecoration:'none',fontSize:'15px',fontWeight:'700',boxShadow:'0 4px 20px rgba(212,175,55,0.3)',marginTop:'16px'}}>
+          <a href="/clients" style={{ display: 'block', textAlign: 'center', background: accent, borderRadius: '8px', padding: '14px', textDecoration: 'none', fontSize: '14px', fontWeight: '500', color: '#000', marginTop: '16px' }}>
             + Ajouter un client
           </a>
         )}
       </div>
-
-      <style>{`
-        @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
-        @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(20px)} }
-        * { box-sizing: border-box; }
-      `}</style>
     </div>
   );
 }
