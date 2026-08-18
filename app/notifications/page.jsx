@@ -1,19 +1,30 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from '../context/ThemeContext';
 import Sidebar from '../components/Sidebar';
+import Loader from '../components/Loader';
 
 const API = 'https://fideleasy-backend-production.up.railway.app';
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
+  const [shop, setShop] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ title: '', message: '', target: 'all' });
   const [sending, setSending] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [form, setForm] = useState({ title: '', message: '', target: 'all' });
+  const [success, setSuccess] = useState('');
   const [isMobile, setIsMobile] = useState(false);
-  const [shopId, setShopId] = useState(null);
   const theme = useTheme();
+  const router = useRouter();
+
+  const isDark = theme.bg === '#0a0a18' || theme.bg?.includes('0a0a');
+  const bg = isDark ? '#0f0f12' : '#f5f4f1';
+  const surface = isDark ? '#18181b' : '#ffffff';
+  const border = isDark ? '#27272a' : '#e4e2dc';
+  const text = isDark ? '#fafafa' : '#18181b';
+  const textMuted = isDark ? '#71717a' : '#a1a1aa';
+  const accent = '#d4af37';
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -24,127 +35,140 @@ export default function Notifications() {
 
   useEffect(() => {
     const shopData = localStorage.getItem('shop');
-    if (!shopData) return;
-    const id = JSON.parse(shopData).id;
-    setShopId(id);
-    fetch(`${API}/notifications/${id}`)
+    if (!shopData) { router.push('/login'); return; }
+    const s = JSON.parse(shopData);
+    setShop(s);
+    fetch(`${API}/notifications/${s.id}`)
       .then(r => r.json())
-      .then(d => { setNotifications(d.data || []); setLoading(false); });
+      .then(d => setNotifications(d.data || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const sendNotification = async () => {
+    if (!form.title.trim() || !form.message.trim()) return;
     setSending(true);
-    await fetch(`${API}/notifications`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, shop_id: shopId })
-    });
-    const d = await fetch(`${API}/notifications/${shopId}`).then(r => r.json());
-    setNotifications(d.data || []);
-    setForm({ title: '', message: '', target: 'all' });
-    setSending(false);
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
+    setSuccess('');
+    try {
+      const res = await fetch(`${API}/notifications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, shop_id: shop.id })
+      });
+      const data = await res.json();
+      if (data.message) {
+        setSuccess('Notification envoyée avec succès !');
+        setForm({ title: '', message: '', target: 'all' });
+        const res2 = await fetch(`${API}/notifications/${shop.id}`);
+        const d2 = await res2.json();
+        setNotifications(d2.data || []);
+        setTimeout(() => setSuccess(''), 4000);
+      }
+    } catch (err) {
+      setSuccess('Erreur lors de l\'envoi.');
+    } finally {
+      setSending(false);
+    }
   };
 
-  const timeAgo = (date) => {
-    const diff = Math.floor((Date.now() - new Date(date)) / 60000);
-    if (diff < 60) return `Il y a ${diff} min`;
-    if (diff < 1440) return `Il y a ${Math.floor(diff/60)}h`;
-    return `Il y a ${Math.floor(diff/1440)}j`;
-  };
+  if (loading) return <Loader />;
 
   return (
-    <div style={{display:'flex',minHeight:'100vh',background:theme.bg,color:theme.color,fontFamily:'system-ui,-apple-system,sans-serif',position:'relative'}}>
-      <div style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:0}}>
-        <div style={{position:'absolute',top:'10%',left:'5%',width:'400px',height:'400px',borderRadius:'50%',background:'rgba(212,175,55,0.04)',animation:'float1 8s ease-in-out infinite'}}/>
-        <div style={{position:'absolute',bottom:'10%',right:'5%',width:'300px',height:'300px',borderRadius:'50%',background:'rgba(212,175,55,0.03)',animation:'float2 10s ease-in-out infinite'}}/>
-      </div>
-
+    <div style={{ display: 'flex', minHeight: '100vh', background: bg, color: text, fontFamily: 'system-ui,-apple-system,sans-serif' }}>
       <Sidebar activePage="/notifications" />
 
-      <div style={{marginLeft:isMobile?0:'240px',flex:1,padding:isMobile?'20px 16px 100px':'32px',position:'relative',zIndex:1}}>
-        {isMobile && (
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px'}}>
-            <h1 style={{fontSize:'20px',fontWeight:'800',margin:0}}>Fidel<span style={{color:'#d4af37'}}>Easy</span></h1>
-          </div>
-        )}
+      <div style={{ marginLeft: isMobile ? 0 : '240px', flex: 1, padding: isMobile ? '20px 16px 100px' : '40px 32px', maxWidth: '1200px' }}>
 
-        <div style={{marginBottom:'24px'}}>
-          <h2 style={{fontSize:isMobile?'20px':'24px',fontWeight:'700',margin:'0 0 4px'}}>Notifications</h2>
-          <p style={{color:theme.textMuted,margin:0,fontSize:'14px'}}>Envoyez des messages à vos clients</p>
+        {/* Header */}
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: '500', margin: '0 0 4px', color: text }}>Notifications</h1>
+          <p style={{ margin: 0, fontSize: '13px', color: textMuted }}>Envoyez des messages push à vos clients</p>
         </div>
 
-        <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr':'1fr 1fr',gap:'20px'}}>
-          <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'24px',backdropFilter:'blur(10px)'}}>
-            <h3 style={{margin:'0 0 20px',fontSize:'15px',fontWeight:'600',color:theme.textSecondary}}>✉️ Nouvelle notification</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px', alignItems: 'start' }}>
 
-            {success && (
-              <div style={{background:'rgba(34,197,94,0.1)',border:'1px solid rgba(34,197,94,0.3)',borderRadius:'8px',padding:'12px',marginBottom:'16px',color:'#86efac',fontSize:'14px'}}>
-                ✅ Notification envoyée !
+          {/* Formulaire */}
+          <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', padding: '24px' }}>
+            <p style={{ margin: '0 0 20px', fontSize: '13px', fontWeight: '500', color: text }}>Nouvelle notification</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ fontSize: '11px', color: textMuted, display: 'block', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Titre *</label>
+                <input
+                  type="text"
+                  placeholder="Offre spéciale ce weekend"
+                  value={form.title}
+                  onChange={e => setForm({ ...form, title: e.target.value })}
+                  style={{ width: '100%', background: isDark ? '#27272a' : '#f5f4f1', border: `0.5px solid ${border}`, borderRadius: '6px', padding: '10px 12px', fontSize: '13px', color: text, outline: 'none', boxSizing: 'border-box' }}
+                />
               </div>
-            )}
 
-            <div style={{marginBottom:'14px'}}>
-              <div style={{fontSize:'11px',color:theme.textMuted,marginBottom:'6px',textTransform:'uppercase',letterSpacing:'0.8px'}}>Titre</div>
-              <input placeholder="Ex: Offre spéciale ce weekend !" value={form.title} onChange={e => setForm({...form, title: e.target.value})} style={{width:'100%',background:theme.inputBg,border:`1px solid ${theme.inputBorder}`,borderRadius:'8px',padding:'10px 12px',color:theme.color,fontSize:'14px',boxSizing:'border-box',outline:'none'}} onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'} onBlur={e=>e.target.style.borderColor=theme.inputBorder}/>
+              <div>
+                <label style={{ fontSize: '11px', color: textMuted, display: 'block', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Message *</label>
+                <textarea
+                  placeholder="Venez profiter de -20% sur toute la carte..."
+                  value={form.message}
+                  onChange={e => setForm({ ...form, message: e.target.value })}
+                  rows={4}
+                  style={{ width: '100%', background: isDark ? '#27272a' : '#f5f4f1', border: `0.5px solid ${border}`, borderRadius: '6px', padding: '10px 12px', fontSize: '13px', color: text, outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '11px', color: textMuted, display: 'block', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Destinataires</label>
+                <select
+                  value={form.target}
+                  onChange={e => setForm({ ...form, target: e.target.value })}
+                  style={{ width: '100%', background: isDark ? '#27272a' : '#f5f4f1', border: `0.5px solid ${border}`, borderRadius: '6px', padding: '10px 12px', fontSize: '13px', color: text, outline: 'none', boxSizing: 'border-box' }}
+                >
+                  <option value="all">Tous les clients</option>
+                  <option value="inactive">Clients inactifs</option>
+                </select>
+              </div>
+
+              {success && (
+                <p style={{ fontSize: '13px', color: success.includes('succès') ? '#22c55e' : '#ef4444', margin: 0, padding: '10px 12px', background: success.includes('succès') ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', borderRadius: '6px' }}>
+                  {success}
+                </p>
+              )}
+
+              <button
+                onClick={sendNotification}
+                disabled={sending || !form.title.trim() || !form.message.trim()}
+                style={{ background: accent, border: 'none', borderRadius: '6px', padding: '11px', fontSize: '13px', color: '#000', fontWeight: '500', cursor: sending || !form.title.trim() || !form.message.trim() ? 'not-allowed' : 'pointer', opacity: sending || !form.title.trim() || !form.message.trim() ? 0.6 : 1 }}
+              >
+                {sending ? 'Envoi en cours...' : 'Envoyer la notification'}
+              </button>
             </div>
-
-            <div style={{marginBottom:'14px'}}>
-              <div style={{fontSize:'11px',color:theme.textMuted,marginBottom:'6px',textTransform:'uppercase',letterSpacing:'0.8px'}}>Message</div>
-              <textarea placeholder="Votre message..." value={form.message} onChange={e => setForm({...form, message: e.target.value})} rows={4} style={{width:'100%',background:theme.inputBg,border:`1px solid ${theme.inputBorder}`,borderRadius:'8px',padding:'10px 12px',color:theme.color,fontSize:'14px',boxSizing:'border-box',resize:'vertical',outline:'none'}} onFocus={e=>e.target.style.borderColor='rgba(212,175,55,0.5)'} onBlur={e=>e.target.style.borderColor=theme.inputBorder}/>
-            </div>
-
-            <div style={{marginBottom:'20px'}}>
-              <div style={{fontSize:'11px',color:theme.textMuted,marginBottom:'6px',textTransform:'uppercase',letterSpacing:'0.8px'}}>Destinataires</div>
-              <select value={form.target} onChange={e => setForm({...form, target: e.target.value})} style={{width:'100%',background:theme.inputBg,border:`1px solid ${theme.inputBorder}`,borderRadius:'8px',padding:'10px 12px',color:theme.color,fontSize:'14px',boxSizing:'border-box',outline:'none'}}>
-                <option value="all">Tous les clients</option>
-                <option value="active">Clients actifs</option>
-                <option value="inactive">Clients inactifs</option>
-              </select>
-            </div>
-
-            <button onClick={sendNotification} disabled={sending || !form.title || !form.message} style={{width:'100%',background:'#d4af37',color:'white',border:'none',borderRadius:'10px',padding:'12px',cursor:'pointer',fontSize:'15px',fontWeight:'600',opacity:sending||!form.title||!form.message?0.6:1,boxShadow:'0 4px 16px rgba(212,175,55,0.3)'}}>
-              {sending ? 'Envoi...' : '🚀 Envoyer'}
-            </button>
           </div>
 
-          <div style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'16px',padding:'24px',backdropFilter:'blur(10px)'}}>
-            <h3 style={{margin:'0 0 20px',fontSize:'15px',fontWeight:'600',color:theme.textSecondary}}>📋 Historique</h3>
-            {loading ? (
-              <div style={{textAlign:'center',padding:'40px',color:theme.textMuted}}>Chargement...</div>
-            ) : notifications.length === 0 ? (
-              <div style={{textAlign:'center',padding:'40px',color:theme.textMuted}}>
-                <div style={{fontSize:'40px',marginBottom:'12px'}}>🔔</div>
-                <p>Aucune notification envoyée</p>
+          {/* Historique */}
+          <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '8px', overflow: 'hidden' }}>
+            <div style={{ padding: '20px 24px', borderBottom: `0.5px solid ${border}` }}>
+              <p style={{ margin: 0, fontSize: '13px', fontWeight: '500', color: text }}>Historique</p>
+            </div>
+            {notifications.length === 0 ? (
+              <div style={{ padding: '40px 24px', textAlign: 'center', color: textMuted, fontSize: '13px' }}>
+                Aucune notification envoyée
               </div>
             ) : (
-              <div style={{display:'flex',flexDirection:'column',gap:'10px',maxHeight:'400px',overflowY:'auto'}}>
-                {notifications.map(notif => (
-                  <div key={notif.id} style={{background:theme.cardBg,border:`1px solid ${theme.cardBorder}`,borderRadius:'12px',padding:'14px'}}>
-                    <div style={{display:'flex',justifyContent:'space-between',marginBottom:'6px'}}>
-                      <span style={{fontWeight:'600',fontSize:'14px'}}>{notif.title}</span>
-                      <span style={{fontSize:'11px',color:theme.textMuted}}>{timeAgo(notif.created_at)}</span>
+              notifications.map((notif, i) => (
+                <div key={notif.id} style={{ padding: '16px 24px', borderBottom: i < notifications.length - 1 ? `0.5px solid ${border}` : 'none' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ margin: '0 0 3px', fontSize: '13px', fontWeight: '500', color: text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notif.title}</p>
+                      <p style={{ margin: 0, fontSize: '12px', color: textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notif.message}</p>
                     </div>
-                    <p style={{color:theme.textMuted,fontSize:'13px',margin:'0 0 8px'}}>{notif.message}</p>
-                    <span style={{background:'rgba(212,175,55,0.1)',color:'#d4af37',borderRadius:'4px',padding:'2px 8px',fontSize:'11px'}}>
-                      {notif.target === 'all' ? 'Tous les clients' : notif.target}
+                    <span style={{ fontSize: '11px', color: textMuted, flexShrink: 0 }}>
+                      {new Date(notif.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))
             )}
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
-        @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(20px)} }
-        input::placeholder,textarea::placeholder { color: rgba(255,255,255,0.25); }
-        select option { background: #1a1a2e; color: white; }
-        * { box-sizing: border-box; }
-      `}</style>
     </div>
   );
 }
