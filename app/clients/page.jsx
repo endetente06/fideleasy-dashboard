@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '../context/ThemeContext';
 import Sidebar from '../components/Sidebar';
@@ -16,13 +16,18 @@ export default function Clients() {
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStampModal, setShowStampModal] = useState(false);
+  const [showScanModal, setShowScanModal] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [stampMessage, setStampMessage] = useState('');
   const [stampLoading, setStampLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [addForm, setAddForm] = useState({ name: '', email: '', phone: '' });
   const [addLoading, setAddLoading] = useState(false);
+  const [scanResult, setScanResult] = useState('');
+  const [scanning, setScanning] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const scannerRef = useRef(null);
+  const scannerInstanceRef = useRef(null);
   const theme = useTheme();
   const router = useRouter();
 
@@ -49,6 +54,70 @@ export default function Clients() {
     setShop(s);
     loadData(s.id);
   }, []);
+
+  useEffect(() => {
+    if (showScanModal) {
+      startScanner();
+    } else {
+      stopScanner();
+    }
+    return () => stopScanner();
+  }, [showScanModal]);
+
+  const startScanner = async () => {
+    try {
+      const { Html5Qrcode } = await import('html5-qrcode');
+      setScanning(true);
+      setScanResult('');
+      const scanner = new Html5Qrcode('qr-reader');
+      scannerInstanceRef.current = scanner;
+      await scanner.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 220, height: 220 } },
+        async (decodedText) => {
+          await scanner.stop();
+          setScanning(false);
+          handleQRScan(decodedText);
+        },
+        () => {}
+      );
+    } catch (err) {
+      setScanning(false);
+      setScanResult('Impossible d\'accéder à la caméra.');
+    }
+  };
+
+  const stopScanner = async () => {
+    if (scannerInstanceRef.current) {
+      try {
+        await scannerInstanceRef.current.stop();
+        scannerInstanceRef.current = null;
+      } catch (e) {}
+    }
+    setScanning(false);
+  };
+
+  const handleQRScan = async (qrText) => {
+    setScanResult('Recherche du client...');
+    try {
+      // Le QR PassKit contient l'ID du membre
+      const memberId = qrText.split('/').pop()?.replace('.pkpass', '').replace('.gpay', '');
+      const card = cards.find(c => c.passkit_member_id === memberId);
+      if (!card) {
+        setScanResult('Client introuvable. Vérifiez que la carte est bien enregistrée.');
+        return;
+      }
+      const client = clients.find(c => c.id === card.customer_id);
+      if (client) {
+        setSelectedClient(client);
+        setShowScanModal(false);
+        setShowStampModal(true);
+        setStampMessage('');
+      }
+    } catch (err) {
+      setScanResult('Erreur lors du scan. Réessayez.');
+    }
+  };
 
   const loadData = async (shopId) => {
     try {
@@ -142,9 +211,14 @@ export default function Clients() {
             <h1 style={{ fontSize: '22px', fontWeight: '500', margin: '0 0 4px', color: text }}>Clients</h1>
             <p style={{ margin: 0, fontSize: '13px', color: textMuted }}>{clients.length} client{clients.length > 1 ? 's' : ''} au total</p>
           </div>
-          <button onClick={() => setShowAddModal(true)} style={{ background: accent, border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', color: '#000', fontWeight: '500', cursor: 'pointer' }}>
-            + Ajouter un client
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={() => setShowScanModal(true)} style={{ background: 'transparent', border: `0.5px solid ${border}`, borderRadius: '6px', padding: '8px 16px', fontSize: '13px', color: text, cursor: 'pointer' }}>
+              Scanner QR
+            </button>
+            <button onClick={() => setShowAddModal(true)} style={{ background: accent, border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', color: '#000', fontWeight: '500', cursor: 'pointer' }}>
+              + Ajouter
+            </button>
+          </div>
         </div>
 
         {/* Search */}
@@ -168,7 +242,7 @@ export default function Clients() {
             filteredClients.map((client, i) => {
               const card = getClientCard(client.id);
               return (
-                <div key={client.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px', borderBottom: i < filteredClients.length - 1 ? `0.5px solid ${border}` : 'none', cursor: 'pointer', transition: 'background 0.15s' }}
+                <div key={client.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px', borderBottom: i < filteredClients.length - 1 ? `0.5px solid ${border}` : 'none' }}
                   onMouseEnter={e => e.currentTarget.style.background = surfaceHover}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                   <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: isDark ? '#27272a' : '#f0ede6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '500', color: accent, flexShrink: 0 }}>
@@ -180,7 +254,7 @@ export default function Clients() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
                     {card && (
-                      <span style={{ fontSize: '12px', color: textMuted }}>{card.stamps || 0}/{shop?.card_stamps_required || 10} tampons</span>
+                      <span style={{ fontSize: '12px', color: textMuted }}>{card.stamps || 0}/{shop?.card_stamps_required || 10}</span>
                     )}
                     <button onClick={() => { setSelectedClient(client); setShowStampModal(true); setStampMessage(''); }}
                       style={{ background: accent, border: 'none', borderRadius: '5px', padding: '6px 14px', fontSize: '12px', color: '#000', fontWeight: '500', cursor: 'pointer' }}>
@@ -193,6 +267,30 @@ export default function Clients() {
           )}
         </div>
       </div>
+
+      {/* Modal Scanner QR */}
+      {showScanModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px' }}>
+          <div style={{ background: surface, border: `0.5px solid ${border}`, borderRadius: '12px', padding: '28px', width: '100%', maxWidth: '400px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: '500', margin: 0, color: text }}>Scanner la carte client</h2>
+              <button onClick={() => setShowScanModal(false)} style={{ background: 'transparent', border: 'none', color: textMuted, cursor: 'pointer', fontSize: '18px', padding: 0 }}>×</button>
+            </div>
+            <div id="qr-reader" style={{ width: '100%', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }} />
+            {scanResult && (
+              <p style={{ fontSize: '13px', color: scanResult.includes('introuvable') || scanResult.includes('Erreur') || scanResult.includes('Impossible') ? '#ef4444' : textMuted, margin: 0, textAlign: 'center' }}>
+                {scanResult}
+              </p>
+            )}
+            {!scanning && !scanResult && (
+              <p style={{ fontSize: '13px', color: textMuted, margin: 0, textAlign: 'center' }}>Pointez la caméra vers le QR code de la carte client</p>
+            )}
+            <button onClick={() => setShowScanModal(false)} style={{ width: '100%', marginTop: '16px', background: 'transparent', border: `0.5px solid ${border}`, borderRadius: '6px', padding: '10px', fontSize: '13px', color: text, cursor: 'pointer' }}>
+              Annuler
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal Tampon */}
       {showStampModal && selectedClient && (
