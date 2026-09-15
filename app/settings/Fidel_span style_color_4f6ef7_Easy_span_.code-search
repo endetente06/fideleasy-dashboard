@@ -1,0 +1,44 @@
+# Query: Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+# ContextLines: 1
+
+8 results - 8 files
+
+app\clients\page.jsx:
+  49            <h1 style={{fontSize:'22px',fontWeight:'800',margin:0}}>
+  50:             
+  51            </h1>
+
+app\dashboard\page.jsx:
+  50            <h1 style={{fontSize:'22px',fontWeight:'800',margin:0}}>
+  51:             Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+  52            </h1>
+
+app\join\[shop_id]\page.jsx:
+  81          <div style={{textAlign:'center',marginTop:'16px',fontSize:'12px',color:'#6060a0'}}>
+  82:           Fidel<span style={{color:'#4f6ef7'}}>Easy</span> · Carte de fidélité digitale
+  83          </div>
+
+app\legal\page.jsx:
+  8            <h1 style={{fontSize:'32px',fontWeight:'800',margin:'16px 0 8px'}}>
+  9:             Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+  10            </h1>
+
+app\login\page.jsx:
+  33            <h1 style={{fontSize:'32px',fontWeight:'bold',marginBottom:'8px'}}>
+  34:             Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+  35            </h1>
+
+app\notifications\page.jsx:
+  57            <h1 style={{fontSize:'22px',fontWeight:'800',margin:0}}>
+  58:             Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+  59            </h1>
+
+app\qrcode\page.jsx:
+  34            <h1 style={{fontSize:'22px',fontWeight:'800',margin:0}}>
+  35:             Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+  36            </h1>
+
+app\register\page.jsx:
+  43            <h1 style={{fontSize:'32px',fontWeight:'bold',marginBottom:'8px'}}>
+  44:             Fidel<span style={{color:'#4f6ef7'}}>Easy</span>
+  45            </h1>
