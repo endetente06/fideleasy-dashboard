@@ -65,37 +65,34 @@ export default function Clients() {
   }, [showScanModal]);
 
   const startScanner = async () => {
-    try {
-      const { Html5Qrcode } = await import('html5-qrcode');
-      setScanning(true);
-      setScanResult('');
-      const scanner = new Html5Qrcode('qr-reader');
-      scannerInstanceRef.current = scanner;
-      await scanner.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 220, height: 220 } },
-        async (decodedText) => {
-          await scanner.stop();
-          setScanning(false);
-          handleQRScan(decodedText);
-        },
-        () => {}
-      );
-    } catch (err) {
-      setScanning(false);
-      setScanResult('Impossible d\'accéder à la caméra.');
-    }
-  };
-
-  const stopScanner = async () => {
-    if (scannerInstanceRef.current) {
-      try {
-        await scannerInstanceRef.current.stop();
-        scannerInstanceRef.current = null;
-      } catch (e) {}
-    }
+  try {
+    const { BrowserMultiFormatReader } = await import('@zxing/browser');
+    setScanning(true);
+    setScanResult('');
+    const codeReader = new BrowserMultiFormatReader();
+    scannerInstanceRef.current = codeReader;
+    const videoElement = document.getElementById('qr-video');
+    await codeReader.decodeFromVideoDevice(undefined, videoElement, (result, error) => {
+      if (result) {
+        stopScanner();
+        handleQRScan(result.getText());
+      }
+    });
+  } catch (err) {
     setScanning(false);
-  };
+    setScanResult('Impossible d\'accéder à la caméra.');
+  }
+};
+
+const stopScanner = async () => {
+  if (scannerInstanceRef.current) {
+    try {
+      BrowserMultiFormatReader.releaseAllStreams();
+      scannerInstanceRef.current = null;
+    } catch (e) {}
+  }
+  setScanning(false);
+};
 
   const handleQRScan = async (qrText) => {
     setScanResult('Recherche du client...');
@@ -276,7 +273,7 @@ export default function Clients() {
               <h2 style={{ fontSize: '16px', fontWeight: '500', margin: 0, color: text }}>Scanner la carte client</h2>
               <button onClick={() => setShowScanModal(false)} style={{ background: 'transparent', border: 'none', color: textMuted, cursor: 'pointer', fontSize: '18px', padding: 0 }}>×</button>
             </div>
-            <div id="qr-reader" style={{ width: '100%', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }} />
+            <video id="qr-video" style={{ width: '100%', borderRadius: '8px' }} />
             {scanResult && (
               <p style={{ fontSize: '13px', color: scanResult.includes('introuvable') || scanResult.includes('Erreur') || scanResult.includes('Impossible') ? '#ef4444' : textMuted, margin: 0, textAlign: 'center' }}>
                 {scanResult}
